@@ -1,0 +1,181 @@
+{
+  "GraphSAGE_base": {
+    "config": {
+      "name": "GraphSAGE_base",
+      "model_name": "GraphSAGE",
+      "hidden_channels": 64,
+      "dropout": 0.3,
+      "epochs": 200,
+      "lr": 0.01,
+      "use_lr_scheduler": false
+    },
+    "test_metrics": {
+      "pr_auc": 0.9217,
+      "roc_auc": 0.9826,
+      "f1_score": 0.7778,
+      "recall": 0.8959,
+      "precision": 0.6873,
+      "confusion_matrix": [
+        [
+          6025,
+          278
+        ],
+        [
+          71,
+          611
+        ]
+      ]
+    },
+    "best_epoch": "N/A",
+    "training_time_sec": 55.5
+  },
+  "GraphSAGE_hidden128": {
+    "config": {
+      "name": "GraphSAGE_hidden128",
+      "model_name": "GraphSAGE",
+      "hidden_channels": 128,
+      "dropout": 0.3,
+      "epochs": 200,
+      "lr": 0.01,
+      "use_lr_scheduler": false
+    },
+    "test_metrics": {
+      "pr_auc": 0.9192,
+      "roc_auc": 0.9818,
+      "f1_score": 0.7854,
+      "recall": 0.8988,
+      "precision": 0.6974,
+      "confusion_matrix": [
+        [
+          6037,
+          266
+        ],
+        [
+          69,
+          613
+        ]
+      ]
+    },
+    "best_epoch": "N/A",
+    "training_time_sec": 76.2
+  },
+  "GraphSAGE_3layer_h128": {
+    "config": {
+      "name": "GraphSAGE_3layer_h128",
+      "model_name": "GraphSAGE3",
+      "hidden_channels": 128,
+      "dropout": 0.3,
+      "epochs": 200,
+      "lr": 0.01,
+      "use_lr_scheduler": false
+    },
+    "test_metrics": {
+      "pr_auc": 0.9272,
+      "roc_auc": 0.984,
+      "f1_score": 0.7972,
+      "recall": 0.9135,
+      "precision": 0.7072,
+      "confusion_matrix": [
+        [
+          6045,
+          258
+        ],
+        [
+          59,
+          623
+        ]
+      ]
+    },
+    "best_epoch": "N/A",
+    "training_time_sec": 153.8
+  },
+  "GAT_heads4": {
+    "config": {
+      "name": "GAT_heads4",
+      "model_name": "GAT",
+      "hidden_channels": 64,
+      "dropout": 0.3,
+      "epochs": 200,
+      "lr": 0.005,
+      "heads": 4,
+      "use_lr_scheduler": false
+    },
+    "test_metrics": {
+      "pr_auc": 0.869,
+      "roc_auc": 0.9754,
+      "f1_score": 0.5779,
+      "recall": 0.9516,
+      "precision": 0.415,
+      "confusion_matrix": [
+        [
+          5388,
+          915
+        ],
+        [
+          33,
+          649
+        ]
+      ]
+    },
+    "best_epoch": "N/A",
+    "training_time_sec": 767.1
+  },
+  "GraphSAGE_lrsched": {
+    "config": {
+      "model_name": "GraphSAGE",
+      "hidden_channels": 64,
+      "dropout": 0.3,
+      "epochs": 300,
+      "lr": 0.01,
+      "use_lr_scheduler": true
+    },
+    "test_metrics": {
+      "pr_auc": 0.908,
+      "roc_auc": 0.9798,
+      "f1_score": 0.7509,
+      "recall": 0.9018,
+      "precision": 0.6433,
+      "confusion_matrix": [
+        [
+          5962,
+          341
+        ],
+        [
+          67,
+          615
+        ]
+      ]
+    },
+    "training_time_sec": 56.3
+  },
+  "GraphSAGE_temporal": {
+    "config": {
+      "name": "GraphSAGE_temporal",
+      "model_name": "GraphSAGE",
+      "hidden_channels": 64,
+      "dropout": 0.3,
+      "epochs": 200,
+      "lr": 0.01,
+      "use_lr_scheduler": false
+    },
+    "test_metrics": {
+      "pr_auc": 0.3361,
+      "roc_auc": 0.8441,
+      "f1_score": 0.2675,
+      "recall": 0.5392,
+      "precision": 0.1778,
+      "confusion_matrix": [
+        [
+          7416,
+          1017
+        ],
+        [
+          188,
+          220
+        ]
+      ]
+    },
+    "best_epoch": "N/A",
+    "training_time_sec": 38.7
+  }
+}

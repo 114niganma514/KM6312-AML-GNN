@@ -1,0 +1,25 @@
+{
+  "model_name": "GraphSAGE3",
+  "hidden_channels": 128,
+  "dropout": 0.3,
+  "best_epoch": 55,
+  "best_val_loss": 0.18612106144428253,
+  "test_metrics": {
+    "pr_auc": 0.9272,
+    "roc_auc": 0.984,
+    "f1_score": 0.7972,
+    "recall": 0.9135,
+    "precision": 0.7072,
+    "confusion_matrix": [
+      [
+        6045,
+        258
+      ],
+      [
+        59,
+        623
+      ]
+    ]
+  },
+  "n_unlabeled_predicted_illicit": 36096
+}

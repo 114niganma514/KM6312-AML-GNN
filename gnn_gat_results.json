@@ -1,0 +1,25 @@
+{
+  "model_name": "GAT",
+  "hidden_channels": 64,
+  "dropout": 0.3,
+  "best_epoch": 190,
+  "best_val_loss": 0.2170698195695877,
+  "test_metrics": {
+    "pr_auc": 0.869,
+    "roc_auc": 0.9754,
+    "f1_score": 0.5779,
+    "recall": 0.9516,
+    "precision": 0.415,
+    "confusion_matrix": [
+      [
+        5388,
+        915
+      ],
+      [
+        33,
+        649
+      ]
+    ]
+  },
+  "n_unlabeled_predicted_illicit": 77672
+}

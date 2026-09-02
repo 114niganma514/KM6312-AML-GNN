@@ -1,0 +1,25 @@
+{
+  "model_name": "GCN",
+  "hidden_channels": 64,
+  "dropout": 0.3,
+  "best_epoch": 186,
+  "best_val_loss": 0.2284584939479828,
+  "test_metrics": {
+    "pr_auc": 0.8334,
+    "roc_auc": 0.972,
+    "f1_score": 0.699,
+    "recall": 0.9076,
+    "precision": 0.5684,
+    "confusion_matrix": [
+      [
+        5833,
+        470
+      ],
+      [
+        63,
+        619
+      ]
+    ]
+  },
+  "n_unlabeled_predicted_illicit": 51148
+}

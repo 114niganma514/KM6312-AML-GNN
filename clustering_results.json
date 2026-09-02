@@ -1,0 +1,28 @@
+{
+  "isolation_forest": {
+    "n_anomalies_detected": 4076,
+    "n_anomalies_labeled": 3974,
+    "f1_score": 0.0,
+    "recall": 0.0,
+    "precision": 0.0,
+    "roc_auc": 0.1016
+  },
+  "kmeans": {
+    "n_clusters": 5,
+    "silhouette_score": 0.0527,
+    "calinski_harabasz": 2787.6532,
+    "davies_bouldin": 2.5242,
+    "top_illicit_clusters": [
+      1,
+      0,
+      2
+    ]
+  },
+  "dbscan": {
+    "n_clusters": 2598,
+    "n_noise_points": 148799,
+    "noise_ratio": 0.7302,
+    "noise_illicit_ratio": 0.0392,
+    "cluster_illicit_ratio": 0.5215
+  }
+}
