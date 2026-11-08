@@ -138,7 +138,7 @@ def generate_report():
     affil = doc.add_paragraph()
     affil.alignment = WD_ALIGN_PARAGRAPH.CENTER
     affil.paragraph_format.space_after = Pt(12)
-    run = affil.add_run("Team 3 | Nanyang Technological University | KM6312 Data Mining | Group Project")
+    run = affil.add_run("KM6312 GROUP3 | Nanyang Technological University | KM6312 Data Mining | Group Project")
     run.font.name = 'Times New Roman'
     run.font.size = Pt(9)
     run.italic = True

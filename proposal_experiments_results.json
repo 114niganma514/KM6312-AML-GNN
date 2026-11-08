@@ -1,0 +1,599 @@
+{
+  "n_features": 165,
+  "n_local_features": 93,
+  "n_aggregated_features": 72,
+  "E0_cross_time_step_edges": {
+    "n_edges": 234355,
+    "n_cross_time_step_edges": 0,
+    "note": "0 means every edge stays inside one time step, so the temporal split cannot leak future information through edges."
+  },
+  "E1_threshold_tuning": {
+    "Logistic Regression": {
+      "default_0.5": {
+        "pr_auc": 0.7963,
+        "roc_auc": 0.9695,
+        "f1_score": 0.6242,
+        "recall": 0.9267,
+        "precision": 0.4706,
+        "confusion_matrix": [
+          [
+            5592,
+            711
+          ],
+          [
+            50,
+            632
+          ]
+        ],
+        "threshold": 0.5
+      },
+      "tuned_on_val": {
+        "pr_auc": 0.7963,
+        "roc_auc": 0.9695,
+        "f1_score": 0.7838,
+        "recall": 0.7947,
+        "precision": 0.7732,
+        "confusion_matrix": [
+          [
+            6144,
+            159
+          ],
+          [
+            140,
+            542
+          ]
+        ],
+        "threshold": 0.8156
+      },
+      "train_seconds": 18.0
+    },
+    "Random Forest": {
+      "default_0.5": {
+        "pr_auc": 0.9789,
+        "roc_auc": 0.9963,
+        "f1_score": 0.9406,
+        "recall": 0.8944,
+        "precision": 0.9919,
+        "confusion_matrix": [
+          [
+            6298,
+            5
+          ],
+          [
+            72,
+            610
+          ]
+        ],
+        "threshold": 0.5
+      },
+      "tuned_on_val": {
+        "pr_auc": 0.9789,
+        "roc_auc": 0.9963,
+        "f1_score": 0.9404,
+        "recall": 0.9135,
+        "precision": 0.9689,
+        "confusion_matrix": [
+          [
+            6283,
+            20
+          ],
+          [
+            59,
+            623
+          ]
+        ],
+        "threshold": 0.3995
+      },
+      "train_seconds": 10.7
+    },
+    "XGBoost": {
+      "default_0.5": {
+        "pr_auc": 0.9865,
+        "roc_auc": 0.9978,
+        "f1_score": 0.9565,
+        "recall": 0.934,
+        "precision": 0.98,
+        "confusion_matrix": [
+          [
+            6290,
+            13
+          ],
+          [
+            45,
+            637
+          ]
+        ],
+        "threshold": 0.5
+      },
+      "tuned_on_val": {
+        "pr_auc": 0.9865,
+        "roc_auc": 0.9978,
+        "f1_score": 0.9552,
+        "recall": 0.9384,
+        "precision": 0.9726,
+        "confusion_matrix": [
+          [
+            6285,
+            18
+          ],
+          [
+            42,
+            640
+          ]
+        ],
+        "threshold": 0.4312
+      },
+      "train_seconds": 20.6
+    },
+    "LightGBM": {
+      "default_0.5": {
+        "pr_auc": 0.9881,
+        "roc_auc": 0.9981,
+        "f1_score": 0.9607,
+        "recall": 0.9501,
+        "precision": 0.9715,
+        "confusion_matrix": [
+          [
+            6284,
+            19
+          ],
+          [
+            34,
+            648
+          ]
+        ],
+        "threshold": 0.5
+      },
+      "tuned_on_val": {
+        "pr_auc": 0.9881,
+        "roc_auc": 0.9981,
+        "f1_score": 0.9627,
+        "recall": 0.9457,
+        "precision": 0.9802,
+        "confusion_matrix": [
+          [
+            6290,
+            13
+          ],
+          [
+            37,
+            645
+          ]
+        ],
+        "threshold": 0.5392
+      },
+      "train_seconds": 11.7
+    }
+  },
+  "E2_smote": {
+    "Logistic Regression": {
+      "default_0.5": {
+        "pr_auc": 0.8244,
+        "roc_auc": 0.9722,
+        "f1_score": 0.6474,
+        "recall": 0.9179,
+        "precision": 0.5,
+        "confusion_matrix": [
+          [
+            5677,
+            626
+          ],
+          [
+            56,
+            626
+          ]
+        ],
+        "threshold": 0.5
+      },
+      "train_seconds": 19.1
+    },
+    "Random Forest": {
+      "default_0.5": {
+        "pr_auc": 0.9796,
+        "roc_auc": 0.9965,
+        "f1_score": 0.9431,
+        "recall": 0.9106,
+        "precision": 0.978,
+        "confusion_matrix": [
+          [
+            6289,
+            14
+          ],
+          [
+            61,
+            621
+          ]
+        ],
+        "threshold": 0.5
+      },
+      "train_seconds": 22.7
+    },
+    "XGBoost": {
+      "default_0.5": {
+        "pr_auc": 0.9854,
+        "roc_auc": 0.9976,
+        "f1_score": 0.9498,
+        "recall": 0.915,
+        "precision": 0.9873,
+        "confusion_matrix": [
+          [
+            6295,
+            8
+          ],
+          [
+            58,
+            624
+          ]
+        ],
+        "threshold": 0.5
+      },
+      "train_seconds": 18.1
+    },
+    "LightGBM": {
+      "default_0.5": {
+        "pr_auc": 0.9858,
+        "roc_auc": 0.9977,
+        "f1_score": 0.9563,
+        "recall": 0.9311,
+        "precision": 0.983,
+        "confusion_matrix": [
+          [
+            6292,
+            11
+          ],
+          [
+            47,
+            635
+          ]
+        ],
+        "threshold": 0.5
+      },
+      "train_seconds": 13.9
+    }
+  },
+  "E3_local_only": {
+    "Logistic Regression": {
+      "default_0.5": {
+        "pr_auc": 0.7668,
+        "roc_auc": 0.9618,
+        "f1_score": 0.5482,
+        "recall": 0.9179,
+        "precision": 0.3908,
+        "confusion_matrix": [
+          [
+            5327,
+            976
+          ],
+          [
+            56,
+            626
+          ]
+        ],
+        "threshold": 0.5
+      },
+      "train_seconds": 11.2
+    },
+    "Random Forest": {
+      "default_0.5": {
+        "pr_auc": 0.969,
+        "roc_auc": 0.9945,
+        "f1_score": 0.9142,
+        "recall": 0.8754,
+        "precision": 0.9567,
+        "confusion_matrix": [
+          [
+            6276,
+            27
+          ],
+          [
+            85,
+            597
+          ]
+        ],
+        "threshold": 0.5
+      },
+      "train_seconds": 7.6
+    },
+    "XGBoost": {
+      "default_0.5": {
+        "pr_auc": 0.9805,
+        "roc_auc": 0.9968,
+        "f1_score": 0.9311,
+        "recall": 0.912,
+        "precision": 0.9511,
+        "confusion_matrix": [
+          [
+            6271,
+            32
+          ],
+          [
+            60,
+            622
+          ]
+        ],
+        "threshold": 0.5
+      },
+      "train_seconds": 9.1
+    },
+    "LightGBM": {
+      "default_0.5": {
+        "pr_auc": 0.9804,
+        "roc_auc": 0.9968,
+        "f1_score": 0.9247,
+        "recall": 0.9267,
+        "precision": 0.9226,
+        "confusion_matrix": [
+          [
+            6250,
+            53
+          ],
+          [
+            50,
+            632
+          ]
+        ],
+        "threshold": 0.5
+      },
+      "train_seconds": 6.4
+    }
+  },
+  "E4_temporal_split": {
+    "Logistic Regression": {
+      "default_0.5": {
+        "pr_auc": 0.199,
+        "roc_auc": 0.855,
+        "f1_score": 0.2163,
+        "recall": 0.7623,
+        "precision": 0.126,
+        "confusion_matrix": [
+          [
+            6276,
+            2157
+          ],
+          [
+            97,
+            311
+          ]
+        ],
+        "threshold": 0.5
+      },
+      "tuned_on_val": {
+        "pr_auc": 0.199,
+        "roc_auc": 0.855,
+        "f1_score": 0.3454,
+        "recall": 0.5025,
+        "precision": 0.2632,
+        "confusion_matrix": [
+          [
+            7859,
+            574
+          ],
+          [
+            203,
+            205
+          ]
+        ],
+        "threshold": 0.9191
+      },
+      "train_seconds": 11.2
+    },
+    "Random Forest": {
+      "default_0.5": {
+        "pr_auc": 0.5406,
+        "roc_auc": 0.8488,
+        "f1_score": 0.568,
+        "recall": 0.4706,
+        "precision": 0.7164,
+        "confusion_matrix": [
+          [
+            8357,
+            76
+          ],
+          [
+            216,
+            192
+          ]
+        ],
+        "threshold": 0.5
+      },
+      "tuned_on_val": {
+        "pr_auc": 0.5406,
+        "roc_auc": 0.8488,
+        "f1_score": 0.5845,
+        "recall": 0.4706,
+        "precision": 0.7711,
+        "confusion_matrix": [
+          [
+            8376,
+            57
+          ],
+          [
+            216,
+            192
+          ]
+        ],
+        "threshold": 0.5166
+      },
+      "train_seconds": 8.5
+    },
+    "XGBoost": {
+      "default_0.5": {
+        "pr_auc": 0.5503,
+        "roc_auc": 0.8429,
+        "f1_score": 0.582,
+        "recall": 0.4828,
+        "precision": 0.7323,
+        "confusion_matrix": [
+          [
+            8361,
+            72
+          ],
+          [
+            211,
+            197
+          ]
+        ],
+        "threshold": 0.5
+      },
+      "tuned_on_val": {
+        "pr_auc": 0.5503,
+        "roc_auc": 0.8429,
+        "f1_score": 0.6134,
+        "recall": 0.4706,
+        "precision": 0.8807,
+        "confusion_matrix": [
+          [
+            8407,
+            26
+          ],
+          [
+            216,
+            192
+          ]
+        ],
+        "threshold": 0.8158
+      },
+      "train_seconds": 13.6
+    },
+    "LightGBM": {
+      "default_0.5": {
+        "pr_auc": 0.553,
+        "roc_auc": 0.8476,
+        "f1_score": 0.5756,
+        "recall": 0.4853,
+        "precision": 0.7071,
+        "confusion_matrix": [
+          [
+            8351,
+            82
+          ],
+          [
+            210,
+            198
+          ]
+        ],
+        "threshold": 0.5
+      },
+      "tuned_on_val": {
+        "pr_auc": 0.553,
+        "roc_auc": 0.8476,
+        "f1_score": 0.5945,
+        "recall": 0.4779,
+        "precision": 0.7863,
+        "confusion_matrix": [
+          [
+            8380,
+            53
+          ],
+          [
+            213,
+            195
+          ]
+        ],
+        "threshold": 0.6515
+      },
+      "train_seconds": 9.7
+    },
+    "time_steps": {
+      "train": [
+        1,
+        34
+      ],
+      "val": [
+        35,
+        41
+      ],
+      "test": [
+        42,
+        49
+      ]
+    },
+    "GraphSAGE (from tune_gnn.py)": {
+      "default_0.5": {
+        "pr_auc": 0.3361,
+        "roc_auc": 0.8441,
+        "f1_score": 0.2675,
+        "recall": 0.5392,
+        "precision": 0.1778,
+        "confusion_matrix": [
+          [
+            7416,
+            1017
+          ],
+          [
+            188,
+            220
+          ]
+        ]
+      }
+    },
+    "GraphSAGE (random, from tune_gnn.py)": {
+      "default_0.5": {
+        "pr_auc": 0.9217,
+        "roc_auc": 0.9826,
+        "f1_score": 0.7778,
+        "recall": 0.8959,
+        "precision": 0.6873,
+        "confusion_matrix": [
+          [
+            6025,
+            278
+          ],
+          [
+            71,
+            611
+          ]
+        ]
+      }
+    }
+  },
+  "E6_isolation_forest_scores": {
+    "mean_score_illicit": -0.1979,
+    "mean_score_licit": -0.1141,
+    "mean_score_unknown": -0.1807,
+    "median_score_illicit": -0.2089,
+    "median_score_licit": -0.1274,
+    "median_score_unknown": -0.1931,
+    "roc_auc_illicit_vs_licit": 0.1018
+  },
+  "E5_unlabeled_prediction_and_case_study": {
+    "model": "LightGBM",
+    "threshold": 0.5392,
+    "n_unlabeled": 157205,
+    "n_unlabeled_predicted_illicit": 12307,
+    "share_unlabeled_predicted_illicit": 0.0783,
+    "labeled_edges_touching_illicit": 2694,
+    "share_of_those_that_are_illicit_to_illicit": 0.3705,
+    "illicit_share_among_labeled_nodes": 0.0976,
+    "mean_flagged_neighbour_share_predicted_illicit_unlabeled": 0.2522,
+    "mean_flagged_neighbour_share_other_unlabeled": 0.055,
+    "flagged_subgraph_n_components": 11813,
+    "flagged_subgraph_largest_components": [
+      183,
+      112,
+      100,
+      85,
+      77,
+      69,
+      65,
+      63,
+      62,
+      59
+    ],
+    "flagged_subgraph_share_nodes_in_components_ge3": 0.2779,
+    "case_study": {
+      "time_step": 29,
+      "n_illicit_in_cluster": 183,
+      "n_nodes_shown": 199,
+      "n_edges_shown": 198,
+      "max_degree_within_cluster": 2,
+      "composition_shown": {
+        "illicit": 183,
+        "licit": 16,
+        "unknown_pred_illicit": 0,
+        "unknown_pred_licit": 0
+      }
+    }
+  },
+  "runtime_seconds": 260.0
+}
