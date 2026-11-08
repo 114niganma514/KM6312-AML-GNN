@@ -1,6 +1,6 @@
 """
 Supplementary experiments that complete the analyses planned in the
-submitted project proposal (KM6312 GROUP3).
+submitted project proposal (Team 3).
 
 Proposal item -> experiment in this script
   Sec 4.2  SMOTE oversampling as an alternative to class weights  -> E2
@@ -113,7 +113,7 @@ def run_suite(X, labels, idx, class_weights, tag, smote=False, tune=False):
 def main():
     t_start = time.time()
     print("=" * 70)
-    print("Supplementary experiments for the submitted proposal (KM6312 GROUP3)")
+    print("Supplementary experiments for the submitted proposal (Team 3)")
     print("=" * 70)
 
     _, edgelist, _, merged = load_all(BASE_DIR)

@@ -1,6 +1,6 @@
 # Graph Neural Networks for Anti-Money Laundering: Detecting Illicit Transactions in the Bitcoin Blockchain
 
-**KM6312 Data Mining – Group Project | Nanyang Technological University | Team: KM6312 GROUP3**
+**KM6312 Data Mining – Group Project | Nanyang Technological University | Team 3**
 
 | Member | Matric No. |
 |---|---|
@@ -12,7 +12,7 @@
 
 🔗 Repository: https://github.com/114niganma514/KM6312-AML-GNN
 
-📄 Final report: [`KM6312_Final_Report.docx`](KM6312_Final_Report.docx) · 📝 Proposal: [`KM6312_Group_Project_Proposal.docx`](KM6312_Group_Project_Proposal.docx)
+📄 Final report: [`KM6312_Final_Report.docx`](KM6312_Final_Report.docx) · 📝 Proposal (as submitted; the team is listed there under its earlier label "KM6312 GROUP3"): [`KM6312_Group_Project_Proposal.docx`](KM6312_Group_Project_Proposal.docx)
 
 **Data mining approaches covered:** Exploratory Data Analysis · Classification (supervised ML + GNNs) · Clustering / anomaly detection
 
@@ -86,7 +86,7 @@ Processed arrays (`*.npy`) are regenerated automatically by `run_all.py`.
 All files are in the project root for easy access:
 
 ```
-KM6312_AML_GNN_Project/
+KM6312-AML-GNN/
 ├── data_loader.py              # Dataset loading and statistics
 ├── eda.py                      # Exploratory data analysis (5 figures)
 ├── preprocessing.py            # Feature scaling, graph construction, splits
@@ -272,6 +272,11 @@ Due to severe class imbalance (2.2% illicit), we use:
 - Train/val/test split: 70%/15%/15% (stratified random, seed 42); temporal split: time steps 1–34 / 35–41 / 42–49
 - Decision threshold: 0.5 by default; validation-tuned thresholds reported in `proposal_experiments_summary.md`
 
+### Classical and Unsupervised Settings
+- Logistic Regression (L2, class weights); Random Forest (200 trees, max depth 15); XGBoost and LightGBM (300 trees, max depth 8, learning rate 0.05, class weighting)
+- Isolation Forest (200 trees, contamination 2%); K-Means (k = 5); DBSCAN (eps 0.5, min_samples 5) on 20 PCA components (64.7% variance)
+- Features are standardised over all 203,769 nodes (no labels used)
+
 ## References
 
 1. Weber, M., Domeniconi, G., Chen, J., Weidele, D. K. I., Bellei, C., Robinson, T., & Leiserson, C. E. (2019). *Anti-Money Laundering in Bitcoin: Experimenting with Graph Convolutional Networks for Financial Forensics.* arXiv:1908.02591.
@@ -292,7 +297,7 @@ Due to severe class imbalance (2.2% illicit), we use:
 
 ## Team
 
-**KM6312 GROUP3** – LIANG JIAYI, FENG YINGNAN, MEI YUHONG, CHEN SIYING, MA ZIFEI
+**Team 3** – LIANG JIAYI, FENG YINGNAN, MEI YUHONG, CHEN SIYING, MA ZIFEI
 
 ## License
 

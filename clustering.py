@@ -86,7 +86,7 @@ def run_isolation_forest(X: np.ndarray, labels: np.ndarray,
     }
 
 
-def run_kmeans(X: np.ndarray, labels: np.ndarray, n_clusters: int = 10,
+def run_kmeans(X: np.ndarray, labels: np.ndarray, n_clusters: int = 5,
                random_state: int = 42) -> dict:
     """Run K-Means clustering and analyze cluster enrichment for illicit activity.
 
@@ -238,7 +238,7 @@ def plot_clustering_visualization(X: np.ndarray, labels: np.ndarray,
 
 
 def run_clustering_pipeline(preprocessed: dict, save_dir: str = None,
-                            n_clusters: int = 10) -> dict:
+                            n_clusters: int = 5) -> dict:
     """Run the full unsupervised learning pipeline.
 
     Args:
