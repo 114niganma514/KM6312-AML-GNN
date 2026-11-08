@@ -4,7 +4,7 @@ Unsupervised Anomaly Detection and Clustering for Illicit Transaction Discovery.
 This module applies label-free methods to identify anomalous transactions
 and potential fraud rings in the Elliptic dataset:
 
-  - Isolation Forest: anomaly detection on 166-dim feature space
+  - Isolation Forest: anomaly detection on 165-dim feature space
   - K-Means: clustering transactions by feature similarity
   - DBSCAN: density-based clustering for fraud ring detection
 
