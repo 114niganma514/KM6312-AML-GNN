@@ -130,7 +130,7 @@ def generate_report():
     authors = doc.add_paragraph()
     authors.alignment = WD_ALIGN_PARAGRAPH.CENTER
     authors.paragraph_format.space_after = Pt(2)
-    run = authors.add_run("[Team Member 1], [Team Member 2], [Team Member 3], [Team Member 4], [Team Member 5]")
+    run = authors.add_run("LIANG JIAYI (G2605019J)  |  FENG YINGNAN (G2603174H)  |  MEI YUHONG (G2608938B)  |  CHEN SIYING (G2607879H)  |  MA ZIFEI (G2603605G)")
     run.font.name = 'Times New Roman'
     run.font.size = Pt(10)
 
@@ -138,7 +138,7 @@ def generate_report():
     affil = doc.add_paragraph()
     affil.alignment = WD_ALIGN_PARAGRAPH.CENTER
     affil.paragraph_format.space_after = Pt(12)
-    run = affil.add_run("Nanyang Technological University | KM6312 Data Mining | Group Project")
+    run = affil.add_run("Team 3 | Nanyang Technological University | KM6312 Data Mining | Group Project")
     run.font.name = 'Times New Roman'
     run.font.size = Pt(9)
     run.italic = True

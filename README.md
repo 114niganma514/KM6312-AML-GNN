@@ -1,6 +1,20 @@
 # Graph Neural Networks for Anti-Money Laundering: Detecting Illicit Transactions in the Bitcoin Blockchain
 
-**KM6312 Data Mining - Group Project | Team: KM6312 GROUP3**
+**KM6312 Data Mining – Group Project | Nanyang Technological University | Team 3**
+
+| Member | Matric No. |
+|---|---|
+| LIANG JIAYI | G2605019J |
+| FENG YINGNAN | G2603174H |
+| MEI YUHONG | G2608938B |
+| CHEN SIYING | G2607879H |
+| MA ZIFEI | G2603605G |
+
+🔗 Repository: https://github.com/114niganma514/KM6312-AML-GNN
+
+📄 Final report: [`KM6312_Final_Report.docx`](KM6312_Final_Report.docx) · 📝 Proposal: [`KM6312_Group_Project_Proposal.docx`](KM6312_Group_Project_Proposal.docx)
+
+**Data mining approaches covered:** Exploratory Data Analysis · Classification (supervised ML + GNNs) · Clustering / anomaly detection
 
 This project applies Graph Neural Networks (GNNs) to detect illicit (money-laundering) transactions in the Bitcoin blockchain, using the Elliptic Bitcoin Transaction Dataset. We compare GNN performance against classical machine learning baselines and unsupervised anomaly detection methods to quantify whether and how graph structure improves illicit transaction detection.
 
@@ -24,6 +38,15 @@ We model Bitcoin transactions as a directed graph (transactions = nodes, payment
 - 49 time steps (~2 weeks of Bitcoin blockchain activity)
 - Source: [Kaggle - ellipticco/elliptic-data-set](https://www.kaggle.com/datasets/ellipticco/elliptic-data-set)
 
+### Data in this repository
+| File | Size | In repo? |
+|---|---|---|
+| `elliptic_txs_classes.csv` (node labels) | 3.2 MB | ✅ included |
+| `elliptic_txs_edgelist.csv` (graph edges) | 4.3 MB | ✅ included |
+| `elliptic_txs_features.csv` (165-dim node features) | 658 MB | ❌ exceeds GitHub's 100 MB file limit — run `python download_data.py` or download from [Kaggle](https://www.kaggle.com/datasets/ellipticco/elliptic-data-set) and place it in the project root |
+
+Processed arrays (`*.npy`) are regenerated automatically by `run_all.py`.
+
 ## Project Structure (Flat Layout)
 
 All files are in the project root for easy access:
@@ -43,11 +66,12 @@ KM6312_AML_GNN_Project/
 ├── download_data.py            # Dataset download script (Kaggle API)
 ├── requirements.txt            # Python dependencies
 ├── README.md                   # This file
-├── KM6312_Final_Report.docx    # Final project report (8.3 pages, ICML style)
+├── KM6312_Final_Report.docx    # Final project report (ICML style)
+├── KM6312_Group_Project_Proposal.docx # Project proposal
 │
-├── elliptic_txs_features.csv   # Raw data (658 MB, not in git)
-├── elliptic_txs_edgelist.csv   # Raw data (4.3 MB, not in git)
-├── elliptic_txs_classes.csv    # Raw data (3.2 MB, not in git)
+├── elliptic_txs_features.csv   # Raw data (658 MB, download separately)
+├── elliptic_txs_edgelist.csv   # Raw data (4.3 MB, included)
+├── elliptic_txs_classes.csv    # Raw data (3.2 MB, included)
 │
 ├── baseline_results.json       # Baseline model metrics
 ├── clustering_results.json     # Clustering metrics
@@ -78,8 +102,8 @@ KM6312_AML_GNN_Project/
 
 ### 1. Clone the repository
 ```bash
-git clone <repository-url>
-cd KM6312_AML_GNN_Project
+git clone https://github.com/114niganma514/KM6312-AML-GNN.git
+cd KM6312-AML-GNN
 ```
 
 ### 2. Install dependencies
@@ -203,7 +227,7 @@ Due to severe class imbalance (2.2% illicit), we use:
 
 ## Team
 
-**KM6312 GROUP3**
+**Team 3** – LIANG JIAYI, FENG YINGNAN, MEI YUHONG, CHEN SIYING, MA ZIFEI
 
 ## License
 
