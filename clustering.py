@@ -1,16 +1,4 @@
-"""
-Unsupervised Anomaly Detection and Clustering for Illicit Transaction Discovery.
-
-This module applies label-free methods to identify anomalous transactions
-and potential fraud rings in the Elliptic dataset:
-
-  - Isolation Forest: anomaly detection on 165-dim feature space
-  - K-Means: clustering transactions by feature similarity
-  - DBSCAN: density-based clustering for fraud ring detection
-
-These methods satisfy the course's clustering requirement and provide
-a complementary perspective to supervised classification.
-"""
+# unsupervised methods: isolation forest, k-means, dbscan
 
 import os
 import json
@@ -34,17 +22,7 @@ sns.set_style("whitegrid")
 def run_isolation_forest(X: np.ndarray, labels: np.ndarray,
                          contamination: float = 0.02,
                          random_state: int = 42) -> dict:
-    """Run Isolation Forest anomaly detection.
-
-    Args:
-        X: Feature matrix (all nodes, including unlabeled).
-        labels: True labels (-1=unknown, 0=licit, 1=illicit).
-        contamination: Expected proportion of anomalies.
-        random_state: Random seed.
-
-    Returns:
-        Dictionary with anomaly scores, predictions, and evaluation.
-    """
+    """run Isolation Forest anomaly detection"""
     print("  Running Isolation Forest...")
     iso_forest = IsolationForest(
         n_estimators=200, contamination=contamination,
@@ -53,14 +31,14 @@ def run_isolation_forest(X: np.ndarray, labels: np.ndarray,
     anomaly_scores = iso_forest.fit_predict(X)  # 1 = normal, -1 = anomaly
     decision_scores = iso_forest.decision_function(X)  # lower = more anomalous
 
-    # Evaluate on labeled nodes
+    # evaluate on labeled nodes
     labeled_mask = labels != -1
     y_true = (labels[labeled_mask] == 1).astype(int)
     y_pred = (anomaly_scores[labeled_mask] == -1).astype(int)
 
-    # Metrics
+    # metrics
     from sklearn.metrics import f1_score, recall_score, precision_score, roc_auc_score
-    # For ROC-AUC, use negative decision score (lower = more anomalous)
+    # for ROC-AUC, use negative decision score (lower = more anomalous)
     y_prob = -decision_scores[labeled_mask]
 
     results = {
@@ -88,28 +66,23 @@ def run_isolation_forest(X: np.ndarray, labels: np.ndarray,
 
 def run_kmeans(X: np.ndarray, labels: np.ndarray, n_clusters: int = 5,
                random_state: int = 42) -> dict:
-    """Run K-Means clustering and analyze cluster enrichment for illicit activity.
-
-    Args:
-        X: Feature matrix.
-        labels: True labels.
-        n_clusters: Number of clusters.
-        random_state: Random seed.
-
-    Returns:
-        Dictionary with cluster labels, metrics, and enrichment analysis.
-    """
+    """run K-Means clustering and analyze cluster enrichment for illicit activity"""
     print(f"  Running K-Means (k={n_clusters})...")
     kmeans = KMeans(n_clusters=n_clusters, random_state=random_state, n_init=10)
     cluster_labels = kmeans.fit_predict(X)
 
-    # Clustering quality metrics (on labeled subset for comparison)
+    # clustering quality metrics (on labeled subset for comparison)
     labeled_mask = labels != -1
-    silhouette = silhouette_score(X[labeled_mask], cluster_labels[labeled_mask])
-    calinski = calinski_harabasz_score(X[labeled_mask], cluster_labels[labeled_mask])
-    davies = davies_bouldin_score(X[labeled_mask], cluster_labels[labeled_mask])
+    if len(np.unique(cluster_labels[labeled_mask])) >= 2:
+        silhouette = silhouette_score(X[labeled_mask], cluster_labels[labeled_mask],
+                                      sample_size=min(20000, int(labeled_mask.sum())),
+                                      random_state=random_state)
+        calinski = calinski_harabasz_score(X[labeled_mask], cluster_labels[labeled_mask])
+        davies = davies_bouldin_score(X[labeled_mask], cluster_labels[labeled_mask])
+    else:  # quality indices are undefined when the labelled subset falls into one cluster
+        silhouette = calinski = davies = float("nan")
 
-    # Cluster enrichment: which clusters have high illicit ratio?
+    # cluster enrichment: which clusters have high illicit ratio?
     labeled_df = pd.DataFrame({
         "cluster": cluster_labels[labeled_mask],
         "label": labels[labeled_mask]
@@ -125,7 +98,11 @@ def run_kmeans(X: np.ndarray, labels: np.ndarray, n_clusters: int = 5,
         "silhouette_score": round(float(silhouette), 4),
         "calinski_harabasz": round(float(calinski), 4),
         "davies_bouldin": round(float(davies), 4),
-        "cluster_enrichment": cluster_stats.to_dict("index"),
+        "cluster_enrichment": {str(k): {kk: (float(vv) if kk == "illicit_ratio" else int(vv))
+                                        for kk, vv in v.items()}
+                               for k, v in cluster_stats.to_dict("index").items()},
+        "cluster_sizes_all_nodes": {str(k): int(v) for k, v in
+                                    zip(*np.unique(cluster_labels, return_counts=True))},
         "top_illicit_clusters": cluster_stats.head(3).index.tolist(),
     }
 
@@ -143,22 +120,9 @@ def run_kmeans(X: np.ndarray, labels: np.ndarray, n_clusters: int = 5,
 
 def run_dbscan(X: np.ndarray, labels: np.ndarray, eps: float = 0.5,
                min_samples: int = 5) -> dict:
-    """Run DBSCAN density-based clustering.
-
-    Note: DBSCAN on 200k x 166 data can be slow. We use PCA-reduced
-    features for efficiency.
-
-    Args:
-        X: Feature matrix (will be PCA-reduced).
-        labels: True labels.
-        eps: DBSCAN epsilon parameter.
-        min_samples: DBSCAN min_samples parameter.
-
-    Returns:
-        Dictionary with cluster labels and statistics.
-    """
+    """run DBSCAN density-based clustering"""
     print("  Running DBSCAN (on PCA-reduced features)...")
-    # Reduce dimensionality for DBSCAN efficiency
+    # reduce dimensionality for DBSCAN efficiency
     pca = PCA(n_components=20, random_state=42)
     X_pca = pca.fit_transform(X)
     print(f"    PCA explained variance ratio: {pca.explained_variance_ratio_.sum():.4f}")
@@ -169,7 +133,7 @@ def run_dbscan(X: np.ndarray, labels: np.ndarray, eps: float = 0.5,
     n_clusters = len(set(cluster_labels)) - (1 if -1 in cluster_labels else 0)
     n_noise = (cluster_labels == -1).sum()
 
-    # Analyze illicit ratio in clusters vs noise
+    # analyze illicit ratio in clusters vs noise
     labeled_mask = labels != -1
     labeled_clusters = cluster_labels[labeled_mask]
     labeled_true = labels[labeled_mask]
@@ -179,6 +143,12 @@ def run_dbscan(X: np.ndarray, labels: np.ndarray, eps: float = 0.5,
 
     results = {
         "n_clusters": n_clusters,
+        "pca_explained_variance": round(float(pca.explained_variance_ratio_.sum()), 4),
+        "n_labeled_in_clusters": int((labeled_clusters != -1).sum()),
+        "n_illicit_in_clusters": int(((labeled_clusters != -1) & (labeled_true == 1)).sum()),
+        "n_labeled_in_noise": int((labeled_clusters == -1).sum()),
+        "n_illicit_in_noise": int(((labeled_clusters == -1) & (labeled_true == 1)).sum()),
+        "ratio_denominator": "labelled nodes only (licit + illicit)",
         "n_noise_points": int(n_noise),
         "noise_ratio": round(float(n_noise / len(cluster_labels)), 4),
         "noise_illicit_ratio": round(float(noise_illicit_ratio), 4),
@@ -202,13 +172,13 @@ def plot_clustering_visualization(X: np.ndarray, labels: np.ndarray,
                                    cluster_labels: np.ndarray,
                                    anomaly_scores: np.ndarray,
                                    save_dir: str) -> None:
-    """Create 2D PCA visualization of clustering and anomaly results."""
+    """create 2D PCA visualization of clustering and anomaly results"""
     pca = PCA(n_components=2, random_state=42)
     X_2d = pca.fit_transform(X)
 
     fig, axes = plt.subplots(1, 3, figsize=(18, 5))
 
-    # True labels (labeled only)
+    # true labels (labeled only)
     labeled_mask = labels != -1
     scatter = axes[0].scatter(X_2d[labeled_mask, 0], X_2d[labeled_mask, 1],
                                c=labels[labeled_mask], cmap="RdYlGn_r", s=1, alpha=0.5)
@@ -223,7 +193,7 @@ def plot_clustering_visualization(X: np.ndarray, labels: np.ndarray,
     axes[1].set_xlabel("PC1")
     axes[1].set_ylabel("PC2")
 
-    # Isolation Forest anomalies
+    # isolation Forest anomalies
     anomaly_color = np.where(anomaly_scores == -1, 1, 0)
     scatter = axes[2].scatter(X_2d[:, 0], X_2d[:, 1], c=anomaly_color,
                                cmap="coolwarm", s=1, alpha=0.5)
@@ -239,16 +209,7 @@ def plot_clustering_visualization(X: np.ndarray, labels: np.ndarray,
 
 def run_clustering_pipeline(preprocessed: dict, save_dir: str = None,
                             n_clusters: int = 5) -> dict:
-    """Run the full unsupervised learning pipeline.
-
-    Args:
-        preprocessed: Dictionary from preprocessing.preprocess_pipeline().
-        save_dir: Optional directory to save results and figures.
-        n_clusters: Number of clusters for K-Means.
-
-    Returns:
-        Dictionary with all unsupervised results.
-    """
+    """run the full unsupervised learning pipeline"""
     print("=" * 60)
     print("Running Unsupervised Anomaly Detection and Clustering")
     print("=" * 60)
@@ -256,29 +217,29 @@ def run_clustering_pipeline(preprocessed: dict, save_dir: str = None,
     X = preprocessed["X"]
     labels = preprocessed["labels"]
 
-    # 1. Isolation Forest
+    # isolation Forest
     iso_results = run_isolation_forest(X, labels)
 
-    # 2. K-Means
+    # K-Means
     kmeans_results = run_kmeans(X, labels, n_clusters=n_clusters)
 
-    # 3. DBSCAN
+    # DBSCAN
     dbscan_results = run_dbscan(X, labels)
 
-    # 4. Visualization
+    # visualization
     if save_dir:
         os.makedirs(save_dir, exist_ok=True)
-        fig_dir = os.path.join(os.path.dirname(save_dir), "figures")
+        fig_dir = save_dir  # flat repository layout: figures sit next to the code
         os.makedirs(fig_dir, exist_ok=True)
         plot_clustering_visualization(
             X, labels, kmeans_results["cluster_labels"],
             iso_results["anomaly_scores"], fig_dir
         )
 
-        # Save results JSON
+        # save results JSON
         summary = {
             "isolation_forest": iso_results["results"],
-            "kmeans": {k: v for k, v in kmeans_results["results"].items() if k != "cluster_enrichment"},
+            "kmeans": kmeans_results["results"],
             "dbscan": dbscan_results["results"],
         }
         with open(os.path.join(save_dir, "clustering_results.json"), "w") as f:

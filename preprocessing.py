@@ -1,13 +1,4 @@
-"""
-Data Preprocessing and Graph Construction for the Elliptic Dataset.
-
-This module handles:
-  - Feature normalization (StandardScaler)
-  - Class imbalance mitigation (class weights, optional SMOTE)
-  - Train/validation/test splitting (random and temporal)
-  - Transaction graph construction (NetworkX and PyG-compatible)
-  - Node feature matrix and edge index preparation for GNN training
-"""
+# preprocessing: scaling, splits, edge index, pyg data
 
 import os
 import numpy as np
@@ -24,39 +15,30 @@ except ImportError:
 
 
 def get_feature_columns(merged_df: pd.DataFrame) -> list:
-    """Return the list of feature column names (all columns except txId, time_step, class, label)."""
+    """return the list of feature column names (all columns except txId, time_step, class, label)"""
     exclude = {"txId", "time_step", "class", "label"}
     return [c for c in merged_df.columns if c not in exclude]
 
 
-def normalize_features(merged_df: pd.DataFrame, feature_cols: list) -> tuple:
-    """Normalize features using StandardScaler.
-
-    Args:
-        merged_df: Merged DataFrame with features and labels.
-        feature_cols: List of feature column names.
-
-    Returns:
-        Tuple of (normalized_features_array, fitted_scaler).
-    """
+def normalize_features(merged_df: pd.DataFrame, feature_cols: list,
+                       fit_mask: np.ndarray = None) -> tuple:
+    """standardise features; fit_mask = rows used to fit the scaler (None = all nodes)"""
+    values = merged_df[feature_cols].values
     scaler = StandardScaler()
-    X = scaler.fit_transform(merged_df[feature_cols].values)
+    if fit_mask is None:
+        scaler.fit(values)
+    else:
+        scaler.fit(values[fit_mask])
+    X = scaler.transform(values)
     return X, scaler
 
 
 def compute_class_weights(labels: np.ndarray) -> dict:
-    """Compute class weights for imbalanced classification.
-
-    Args:
-        labels: Array of labels (1=illicit, 0=licit).
-
-    Returns:
-        Dictionary mapping class index to weight.
-    """
+    """compute class weights for imbalanced classification"""
     n_illicit = (labels == 1).sum()
     n_licit = (labels == 0).sum()
     total = n_illicit + n_licit
-    # Weight inversely proportional to class frequency
+    # weight inversely proportional to class frequency
     weight_illicit = total / (2 * n_illicit) if n_illicit > 0 else 1.0
     weight_licit = total / (2 * n_licit) if n_licit > 0 else 1.0
     return {0: weight_licit, 1: weight_illicit}
@@ -65,24 +47,13 @@ def compute_class_weights(labels: np.ndarray) -> dict:
 def split_labeled_data(merged_df: pd.DataFrame, test_size: float = 0.15,
                        val_size: float = 0.15, random_state: int = 42,
                        temporal: bool = False) -> tuple:
-    """Split labeled transactions into train/validation/test sets.
-
-    Args:
-        merged_df: Merged DataFrame with 'label' column.
-        test_size: Fraction for test set.
-        val_size: Fraction for validation set (from remaining after test).
-        random_state: Random seed for reproducibility.
-        temporal: If True, split by time step (earlier = train, later = test).
-
-    Returns:
-        Tuple of (train_idx, val_idx, test_idx) as numpy arrays of DataFrame indices.
-    """
+    """split labeled transactions into train/validation/test sets"""
     labeled_mask = merged_df["label"] != -1
     labeled_df = merged_df[labeled_mask].copy()
     labeled_indices = labeled_df.index.values
 
     if temporal:
-        # Temporal split: first 70% time steps = train, next 15% = val, last 15% = test
+        # temporal split: first 70% time steps = train, next 15% = val, last 15% = test
         time_steps = sorted(labeled_df["time_step"].unique())
         n_ts = len(time_steps)
         train_cutoff = int(n_ts * (1 - test_size - val_size))
@@ -96,7 +67,7 @@ def split_labeled_data(merged_df: pd.DataFrame, test_size: float = 0.15,
         val_idx = labeled_df[labeled_df["time_step"].isin(val_ts)].index.values
         test_idx = labeled_df[labeled_df["time_step"].isin(test_ts)].index.values
     else:
-        # Random stratified split
+        # random stratified split
         train_val_idx, test_idx = train_test_split(
             labeled_indices, test_size=test_size, random_state=random_state,
             stratify=labeled_df.loc[labeled_indices, "label"].values
@@ -111,19 +82,11 @@ def split_labeled_data(merged_df: pd.DataFrame, test_size: float = 0.15,
 
 
 def build_edge_index(edgelist_df: pd.DataFrame, txid_to_idx: dict) -> np.ndarray:
-    """Convert edge list (txId pairs) to edge index array for PyG.
-
-    Args:
-        edgelist_df: DataFrame with columns ['txId1', 'txId2'].
-        txid_to_idx: Dictionary mapping transaction ID to row index in features.
-
-    Returns:
-        numpy array of shape (2, n_edges) with source and target indices.
-    """
+    """convert edge list (txId pairs) to edge index array for PyG"""
     sources = edgelist_df["txId1"].map(txid_to_idx).values
     targets = edgelist_df["txId2"].map(txid_to_idx).values
 
-    # Filter out edges where either node is not in the feature set (shouldn't happen)
+    # drop edges to unknown txIds
     valid_mask = ~(np.isnan(sources) | np.isnan(targets))
     sources = sources[valid_mask].astype(np.int64)
     targets = targets[valid_mask].astype(np.int64)
@@ -135,19 +98,7 @@ def build_edge_index(edgelist_df: pd.DataFrame, txid_to_idx: dict) -> np.ndarray
 def build_pyg_data(features: np.ndarray, edge_index: np.ndarray,
                    labels: np.ndarray, train_idx: np.ndarray,
                    val_idx: np.ndarray, test_idx: np.ndarray) -> "PyGData":
-    """Build a PyTorch Geometric Data object for GNN training.
-
-    Args:
-        features: Node feature matrix of shape (n_nodes, n_features).
-        edge_index: Edge index array of shape (2, n_edges).
-        labels: Node labels of shape (n_nodes,).
-        train_idx: Training node indices.
-        val_idx: Validation node indices.
-        test_idx: Test node indices.
-
-    Returns:
-        PyG Data object with train/val/test masks.
-    """
+    """build a PyTorch Geometric Data object for GNN training"""
     if not PYG_AVAILABLE:
         raise ImportError("PyTorch Geometric is not installed.")
 
@@ -170,54 +121,55 @@ def build_pyg_data(features: np.ndarray, edge_index: np.ndarray,
 
 
 def preprocess_pipeline(merged_df: pd.DataFrame, edgelist_df: pd.DataFrame,
-                         temporal: bool = False, save_dir: str = None) -> dict:
-    """Run the full preprocessing pipeline.
-
-    Args:
-        merged_df: Merged DataFrame from data_loader.
-        edgelist_df: Edge list DataFrame.
-        temporal: Whether to use temporal split.
-        save_dir: Optional directory to save processed arrays.
-
-    Returns:
-        Dictionary with all preprocessed data components.
-    """
+                         temporal: bool = False, save_dir: str = None,
+                         random_state: int = 42, verbose: bool = True) -> dict:
+    """run the full preprocessing pipeline"""
     print("=" * 60)
     print("Running Preprocessing and Graph Construction")
     print("=" * 60)
 
-    # 1. Get features and labels
+    # get features and labels
     feature_cols = get_feature_columns(merged_df)
     print(f"  Number of features: {len(feature_cols)}")
 
-    # 2. Normalize features
-    X, scaler = normalize_features(merged_df, feature_cols)
-    # Robustness: fill any NaN/Inf (e.g., from zero-variance columns) with 0
+    # split first so the temporal scaler only sees training time steps
+    train_idx, val_idx, test_idx = split_labeled_data(merged_df, temporal=temporal,
+                                                      random_state=random_state)
+    if temporal:
+        last_train_step = merged_df.loc[train_idx, "time_step"].max()
+        fit_mask = (merged_df["time_step"] <= last_train_step).values
+        print(f"  Scaler fitted on time steps 1-{last_train_step} only")
+    else:
+        fit_mask = None
+        print("  Scaler fitted on all nodes (transductive; labels not used)")
+
+    # normalize features
+    X, scaler = normalize_features(merged_df, feature_cols, fit_mask=fit_mask)
+    # zero-variance columns give nan
     X = np.nan_to_num(X, nan=0.0, posinf=0.0, neginf=0.0)
     labels = merged_df["label"].values
     print(f"  Feature matrix shape: {X.shape}")
     print(f"  Labels shape: {labels.shape}")
 
-    # 3. Build txId to index mapping
+    # build txId to index mapping
     txid_to_idx = {txid: idx for idx, txid in enumerate(merged_df["txId"].values)}
 
-    # 4. Build edge index
+    # build edge index
     edge_index = build_edge_index(edgelist_df, txid_to_idx)
     print(f"  Edge index shape: {edge_index.shape}")
     print(f"  Number of edges: {edge_index.shape[1]}")
 
-    # 5. Split data
-    train_idx, val_idx, test_idx = split_labeled_data(merged_df, temporal=temporal)
+    # split sizes
     print(f"  Train samples: {len(train_idx)}")
     print(f"  Validation samples: {len(val_idx)}")
     print(f"  Test samples: {len(test_idx)}")
 
-    # 6. Compute class weights
+    # compute class weights
     train_labels = labels[train_idx]
     class_weights = compute_class_weights(train_labels)
     print(f"  Class weights: {class_weights}")
 
-    # 7. Build PyG data if available
+    # build PyG data if available
     pyg_data = None
     if PYG_AVAILABLE:
         pyg_data = build_pyg_data(X, edge_index, labels, train_idx, val_idx, test_idx)
@@ -225,7 +177,7 @@ def preprocess_pipeline(merged_df: pd.DataFrame, edgelist_df: pd.DataFrame,
     else:
         print("  [WARNING] PyTorch Geometric not available. Skipping PyG Data construction.")
 
-    # 8. Save processed data if requested
+    # save processed data if requested
     if save_dir:
         os.makedirs(save_dir, exist_ok=True)
         np.save(os.path.join(save_dir, "features.npy"), X)

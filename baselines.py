@@ -1,23 +1,4 @@
-"""
-Classical Machine Learning Baselines for Illicit Transaction Detection.
-
-This module trains and evaluates tabular classifiers using only the 166
-node features (no graph structure). These serve as baselines to measure
-the incremental value of graph-based methods (GNNs).
-
-Models:
-  - Logistic Regression
-  - Random Forest
-  - XGBoost
-  - LightGBM
-
-Evaluation metrics (imbalanced classification):
-  - PR-AUC (primary)
-  - F1-Score
-  - Recall (sensitivity to illicit transactions)
-  - Precision
-  - ROC-AUC
-"""
+# classical baselines (LR, RF, XGBoost, LightGBM)
 
 import os
 import json
@@ -44,16 +25,8 @@ except ImportError:
 
 
 def get_baseline_models(class_weights: dict, random_state: int = 42) -> dict:
-    """Return a dictionary of baseline classifier instances.
-
-    Args:
-        class_weights: Dictionary mapping class index to weight.
-        random_state: Random seed for reproducibility.
-
-    Returns:
-        Dictionary of model_name -> model instance.
-    """
-    # Convert class_weights to sample_weight-compatible format
+    """return a dictionary of baseline classifier instances"""
+    # convert class_weights to sample_weight-compatible format
     cw = {0: class_weights.get(0, 1.0), 1: class_weights.get(1, 1.0)}
 
     models = {
@@ -87,16 +60,7 @@ def get_baseline_models(class_weights: dict, random_state: int = 42) -> dict:
 
 
 def compute_metrics(y_true: np.ndarray, y_pred: np.ndarray, y_prob: np.ndarray) -> dict:
-    """Compute evaluation metrics for imbalanced classification.
-
-    Args:
-        y_true: True labels.
-        y_pred: Predicted labels.
-        y_prob: Predicted probabilities for the positive class.
-
-    Returns:
-        Dictionary of metric name -> value.
-    """
+    """compute evaluation metrics for imbalanced classification"""
     # PR-AUC
     precision_curve, recall_curve, _ = precision_recall_curve(y_true, y_prob)
     pr_auc = auc(recall_curve, precision_curve)
@@ -115,7 +79,7 @@ def compute_metrics(y_true: np.ndarray, y_pred: np.ndarray, y_prob: np.ndarray) 
         "precision": round(float(precision_score(y_true, y_pred, zero_division=0)), 4),
     }
 
-    # Confusion matrix
+    # confusion matrix
     cm = confusion_matrix(y_true, y_pred)
     metrics["confusion_matrix"] = cm.tolist()
 
@@ -126,18 +90,7 @@ def train_and_evaluate_models(models: dict, X_train: np.ndarray, y_train: np.nda
                                X_val: np.ndarray, y_val: np.ndarray,
                                X_test: np.ndarray, y_test: np.ndarray,
                                save_dir: str = None) -> dict:
-    """Train all baseline models and evaluate on test set.
-
-    Args:
-        models: Dictionary of model_name -> model instance.
-        X_train, y_train: Training data.
-        X_val, y_val: Validation data (for early stopping if supported).
-        X_test, y_test: Test data.
-        save_dir: Optional directory to save results.
-
-    Returns:
-        Dictionary of model_name -> metrics dict, plus trained models.
-    """
+    """train all baseline models and evaluate on test set"""
     print("=" * 60)
     print("Training and Evaluating Classical ML Baselines")
     print("=" * 60)
@@ -148,7 +101,7 @@ def train_and_evaluate_models(models: dict, X_train: np.ndarray, y_train: np.nda
     for name, model in models.items():
         print(f"\n  Training {name}...")
 
-        # Train
+        # train
         if name == "XGBoost" and X_val is not None:
             model.fit(X_train, y_train, eval_set=[(X_val, y_val)], verbose=False)
         elif name == "LightGBM" and X_val is not None:
@@ -156,11 +109,11 @@ def train_and_evaluate_models(models: dict, X_train: np.ndarray, y_train: np.nda
         else:
             model.fit(X_train, y_train)
 
-        # Predict on test set
+        # predict on test set
         y_prob = model.predict_proba(X_test)[:, 1]
         y_pred = (y_prob >= 0.5).astype(int)
 
-        # Compute metrics
+        # compute metrics
         metrics = compute_metrics(y_test, y_pred, y_prob)
         results[name] = metrics
         trained_models[name] = model
@@ -172,10 +125,10 @@ def train_and_evaluate_models(models: dict, X_train: np.ndarray, y_train: np.nda
         print(f"    Precision: {metrics['precision']:.4f}")
         print(f"    Confusion Matrix: {metrics['confusion_matrix']}")
 
-    # Save results
+    # save results
     if save_dir:
         os.makedirs(save_dir, exist_ok=True)
-        # Save metrics as JSON (convert numpy types)
+        # save metrics as JSON (convert numpy types)
         serializable = {}
         for name, mets in results.items():
             serializable[name] = {k: v for k, v in mets.items()}
@@ -188,15 +141,7 @@ def train_and_evaluate_models(models: dict, X_train: np.ndarray, y_train: np.nda
 
 
 def run_baselines(preprocessed: dict, save_dir: str = None) -> dict:
-    """Run the full baseline training pipeline using preprocessed data.
-
-    Args:
-        preprocessed: Dictionary from preprocessing.preprocess_pipeline().
-        save_dir: Optional directory to save results.
-
-    Returns:
-        Dictionary with baseline results and trained models.
-    """
+    """run the full baseline training pipeline using preprocessed data"""
     X = preprocessed["X"]
     labels = preprocessed["labels"]
     train_idx = preprocessed["train_idx"]

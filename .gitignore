@@ -36,3 +36,6 @@ Thumbs.db
 # Local helper scripts and run logs
 *.bat
 *_log.txt
+
+# old single-run scripts and outputs (kept locally, replaced by run_experiments.py)
+_old/

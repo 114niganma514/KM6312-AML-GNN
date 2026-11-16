@@ -1,0 +1,37 @@
+{
+  "edges": {
+    "n_edges": 234355,
+    "n_cross_time_step": 0
+  },
+  "homophily": {
+    "labelled_edges": 36624,
+    "labelled_edges_touching_illicit": 2694,
+    "share_illicit_to_illicit": 0.3705,
+    "illicit_share_of_labelled_nodes": 0.0976
+  },
+  "isolation_forest": {
+    "median_illicit": -0.2089,
+    "median_licit": -0.1274,
+    "median_unknown": -0.1931,
+    "roc_auc_illicit_vs_licit": 0.1018
+  },
+  "unlabeled_lightgbm": {
+    "val_threshold": 0.5392,
+    "n_unlabeled": 157205,
+    "n_flagged": 12307,
+    "share_flagged": 0.0783,
+    "known_illicit_neighbour_share_flagged": 0.0411,
+    "known_illicit_neighbour_share_other_sample": 0.0139
+  },
+  "case_study": {
+    "time_step": 29,
+    "n_illicit": 183,
+    "n_nodes_shown": 199,
+    "composition": {
+      "illicit": 183,
+      "licit": 16,
+      "unknown_flagged": 0,
+      "unknown_other": 0
+    }
+  }
+}

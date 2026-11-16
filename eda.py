@@ -1,14 +1,4 @@
-"""
-Exploratory Data Analysis (EDA) for the Elliptic Bitcoin Transaction Dataset.
-
-This module produces visualizations and statistical summaries to understand:
-  - Feature distributions (illicit vs licit)
-  - Temporal patterns across 49 time steps
-  - Graph topology (degree distribution, connected components)
-  - Class imbalance and label scarcity
-
-All figures are saved as PNG files in the project directory.
-"""
+# exploratory data analysis figures (01-05)
 
 import os
 import numpy as np
@@ -21,17 +11,17 @@ import networkx as nx
 
 from data_loader import load_all, get_dataset_stats, get_labeled_mask
 
-# Set style
+# set style
 sns.set_style("whitegrid")
 plt.rcParams["font.size"] = 10
 plt.rcParams["figure.dpi"] = 150
 
 
 def plot_class_distribution(merged_df: pd.DataFrame, save_dir: str) -> None:
-    """Plot the class distribution (illicit / licit / unknown)."""
+    """plot the class distribution (illicit / licit / unknown)"""
     fig, axes = plt.subplots(1, 2, figsize=(12, 5))
 
-    # Full distribution including unknown
+    # full distribution including unknown
     class_counts = merged_df["class"].value_counts()
     colors = {"unknown": "#BDBDBD", "licit": "#4CAF50", "illicit": "#F44336"}
     axes[0].bar(class_counts.index, class_counts.values,
@@ -41,7 +31,7 @@ def plot_class_distribution(merged_df: pd.DataFrame, save_dir: str) -> None:
     for i, v in enumerate(class_counts.values):
         axes[0].text(i, v, f"{v:,}", ha="center", va="bottom", fontsize=9)
 
-    # Labeled-only distribution
+    # labeled-only distribution
     labeled = merged_df[merged_df["label"] != -1]
     labeled_counts = labeled["class"].value_counts()
     axes[1].bar(labeled_counts.index, labeled_counts.values,
@@ -58,10 +48,10 @@ def plot_class_distribution(merged_df: pd.DataFrame, save_dir: str) -> None:
 
 
 def plot_temporal_patterns(merged_df: pd.DataFrame, save_dir: str) -> None:
-    """Plot transaction volume and illicit ratio across time steps."""
+    """plot transaction volume and illicit ratio across time steps"""
     fig, axes = plt.subplots(2, 1, figsize=(14, 8), sharex=True)
 
-    # Total transactions per time step
+    # total transactions per time step
     ts_counts = merged_df.groupby("time_step").size()
     axes[0].plot(ts_counts.index, ts_counts.values, marker="o", markersize=3,
                   color="#1976D2", linewidth=1.5)
@@ -69,7 +59,7 @@ def plot_temporal_patterns(merged_df: pd.DataFrame, save_dir: str) -> None:
     axes[0].set_ylabel("Number of Transactions")
     axes[0].fill_between(ts_counts.index, ts_counts.values, alpha=0.1, color="#1976D2")
 
-    # Illicit ratio per time step (among labeled)
+    # illicit ratio per time step (among labeled)
     labeled = merged_df[merged_df["label"] != -1]
     illicit_by_ts = labeled.groupby("time_step")["label"].mean()
     axes[1].plot(illicit_by_ts.index, illicit_by_ts.values, marker="s", markersize=3,
@@ -86,7 +76,7 @@ def plot_temporal_patterns(merged_df: pd.DataFrame, save_dir: str) -> None:
 
 
 def plot_feature_distributions(merged_df: pd.DataFrame, save_dir: str, n_features: int = 9) -> None:
-    """Plot distribution of selected local features for illicit vs licit."""
+    """plot distribution of selected local features for illicit vs licit"""
     labeled = merged_df[merged_df["label"] != -1]
     feature_cols = [c for c in merged_df.columns if c.startswith("feature_")]
     selected = feature_cols[:n_features]
@@ -106,7 +96,7 @@ def plot_feature_distributions(merged_df: pd.DataFrame, save_dir: str, n_feature
         ax.set_xlabel("Feature Value")
         ax.set_ylabel("Density")
 
-    # Hide unused axes
+    # hide unused axes
     for idx in range(n_features, len(axes)):
         axes[idx].set_visible(False)
 
@@ -117,33 +107,33 @@ def plot_feature_distributions(merged_df: pd.DataFrame, save_dir: str, n_feature
 
 
 def plot_graph_topology(edgelist_df: pd.DataFrame, merged_df: pd.DataFrame, save_dir: str) -> None:
-    """Plot graph degree distribution and connected components."""
-    # Build directed graph
+    """plot graph degree distribution and connected components"""
+    # build directed graph
     G = nx.from_pandas_edgelist(edgelist_df, source="txId1", target="txId2",
                                  create_using=nx.DiGraph)
 
-    # Degree distribution
+    # degree distribution
     in_degrees = [d for _, d in G.in_degree()]
     out_degrees = [d for _, d in G.out_degree()]
     total_degrees = [d for _, d in G.degree()]
 
     fig, axes = plt.subplots(1, 3, figsize=(15, 5))
 
-    # In-degree
+    # in-degree
     axes[0].hist(in_degrees, bins=100, color="#1976D2", alpha=0.7, density=True)
     axes[0].set_title("In-Degree Distribution")
     axes[0].set_xlabel("In-Degree")
     axes[0].set_ylabel("Density")
     axes[0].set_yscale("log")
 
-    # Out-degree
+    # out-degree
     axes[1].hist(out_degrees, bins=100, color="#F44336", alpha=0.7, density=True)
     axes[1].set_title("Out-Degree Distribution")
     axes[1].set_xlabel("Out-Degree")
     axes[1].set_ylabel("Density")
     axes[1].set_yscale("log")
 
-    # Total degree
+    # total degree
     axes[2].hist(total_degrees, bins=100, color="#4CAF50", alpha=0.7, density=True)
     axes[2].set_title("Total Degree Distribution")
     axes[2].set_xlabel("Total Degree")
@@ -154,7 +144,7 @@ def plot_graph_topology(edgelist_df: pd.DataFrame, merged_df: pd.DataFrame, save
     plt.savefig(os.path.join(save_dir, "04_graph_topology.png"), bbox_inches="tight")
     plt.close()
 
-    # Connected components stats
+    # connected components stats
     weak_components = list(nx.weakly_connected_components(G))
     largest_cc = max(weak_components, key=len)
 
@@ -179,9 +169,9 @@ def plot_graph_topology(edgelist_df: pd.DataFrame, merged_df: pd.DataFrame, save
 
 
 def plot_correlation_heatmap(merged_df: pd.DataFrame, save_dir: str) -> None:
-    """Plot correlation heatmap of a subset of features."""
+    """plot correlation heatmap of a subset of features"""
     labeled = merged_df[merged_df["label"] != -1]
-    # Select a subset of features for readability
+    # select a subset of features for readability
     feature_cols = [c for c in merged_df.columns if c.startswith("feature_")][:20]
     selected = feature_cols + ["label"]
 
@@ -198,15 +188,7 @@ def plot_correlation_heatmap(merged_df: pd.DataFrame, save_dir: str) -> None:
 
 
 def run_eda(data_dir: str, save_dir: str) -> dict:
-    """Run the full EDA pipeline and save all figures.
-
-    Args:
-        data_dir: Path to raw data directory.
-        save_dir: Path to save figures.
-
-    Returns:
-        Dictionary with dataset and graph statistics.
-    """
+    """run the full EDA pipeline and save all figures"""
     os.makedirs(save_dir, exist_ok=True)
 
     print("=" * 60)

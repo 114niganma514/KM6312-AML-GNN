@@ -1,38 +1,23 @@
-"""
-Dataset Download Script for the Elliptic Bitcoin Transaction Dataset.
-
-This script downloads the Elliptic dataset from Kaggle using the Kaggle API.
-
-Prerequisites:
-  1. Create a Kaggle account at https://www.kaggle.com
-  2. Go to https://www.kaggle.com/settings/api and click "Create New Token"
-  3. Save the downloaded kaggle.json to:
-     - Windows: C:\\Users\\<username>\\.kaggle\\kaggle.json
-     - Linux/Mac: ~/.kaggle/kaggle.json
-  4. Or set environment variables: KAGGLE_USERNAME and KAGGLE_KEY
-
-Usage:
-  python download_data.py
-"""
+# download the elliptic dataset from kaggle
 
 import os
 import sys
 import zipfile
 import shutil
 
-# Paths
+# paths
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_RAW_DIR = BASE_DIR
 KAGGLE_DATASET = "ellipticco/elliptic-data-set"
 
 
 def check_kaggle_credentials():
-    """Check if Kaggle API credentials are available."""
-    # Check for kaggle.json
+    """check if Kaggle API credentials are available"""
+    # check for kaggle.json
     kaggle_dir = os.path.join(os.path.expanduser("~"), ".kaggle")
     kaggle_json = os.path.join(kaggle_dir, "kaggle.json")
 
-    # Check for environment variables
+    # check for environment variables
     has_env = bool(os.environ.get("KAGGLE_USERNAME") and os.environ.get("KAGGLE_KEY"))
 
     if os.path.exists(kaggle_json) or has_env:
@@ -41,7 +26,7 @@ def check_kaggle_credentials():
 
 
 def download_dataset():
-    """Download the Elliptic dataset from Kaggle."""
+    """download the Elliptic dataset from Kaggle"""
     try:
         from kaggle.api.kaggle_api_extended import KaggleApi
     except ImportError:
@@ -67,28 +52,28 @@ def download_dataset():
     print(f"Downloading Elliptic Dataset from Kaggle: {KAGGLE_DATASET}")
     print("=" * 60)
 
-    # Initialize Kaggle API
+    # initialize Kaggle API
     api = KaggleApi()
     api.authenticate()
 
-    # Create output directory
+    # create output directory
     os.makedirs(DATA_RAW_DIR, exist_ok=True)
 
-    # Download dataset zip
+    # download dataset zip
     zip_path = os.path.join(DATA_RAW_DIR, "elliptic-data-set.zip")
     print(f"\nDownloading to: {zip_path}")
     api.dataset_download_files(KAGGLE_DATASET, path=DATA_RAW_DIR, unzip=False)
 
-    # Extract zip
+    # extract zip
     print(f"\nExtracting {zip_path}...")
     with zipfile.ZipFile(zip_path, "r") as zip_ref:
         zip_ref.extractall(DATA_RAW_DIR)
 
-    # Remove zip
+    # remove zip
     os.remove(zip_path)
     print("Zip file removed.")
 
-    # Verify files
+    # verify files
     required_files = [
         "elliptic_txs_features.csv",
         "elliptic_txs_edgelist.csv",

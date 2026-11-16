@@ -1,0 +1,68 @@
+{
+  "isolation_forest": {
+    "n_anomalies_detected": 4076,
+    "n_anomalies_labeled": 3975,
+    "f1_score": 0.0,
+    "recall": 0.0,
+    "precision": 0.0,
+    "roc_auc": 0.1018
+  },
+  "kmeans": {
+    "n_clusters": 5,
+    "silhouette_score": 0.0533,
+    "calinski_harabasz": 2787.6532,
+    "davies_bouldin": 2.5242,
+    "cluster_enrichment": {
+      "1": {
+        "n_total": 22171,
+        "n_illicit": 2657,
+        "illicit_ratio": 0.1198
+      },
+      "0": {
+        "n_total": 16577,
+        "n_illicit": 1888,
+        "illicit_ratio": 0.1139
+      },
+      "2": {
+        "n_total": 7189,
+        "n_illicit": 0,
+        "illicit_ratio": 0.0
+      },
+      "3": {
+        "n_total": 621,
+        "n_illicit": 0,
+        "illicit_ratio": 0.0
+      },
+      "4": {
+        "n_total": 6,
+        "n_illicit": 0,
+        "illicit_ratio": 0.0
+      }
+    },
+    "cluster_sizes_all_nodes": {
+      "0": 92377,
+      "1": 101946,
+      "2": 8700,
+      "3": 643,
+      "4": 103
+    },
+    "top_illicit_clusters": [
+      1,
+      0,
+      2
+    ]
+  },
+  "dbscan": {
+    "n_clusters": 2598,
+    "pca_explained_variance": 0.6472,
+    "n_labeled_in_clusters": 5641,
+    "n_illicit_in_clusters": 2942,
+    "n_labeled_in_noise": 40923,
+    "n_illicit_in_noise": 1603,
+    "ratio_denominator": "labelled nodes only (licit + illicit)",
+    "n_noise_points": 148799,
+    "noise_ratio": 0.7302,
+    "noise_illicit_ratio": 0.0392,
+    "cluster_illicit_ratio": 0.5215
+  }
+}

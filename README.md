@@ -1,4 +1,4 @@
-# Graph Neural Networks for Anti-Money Laundering: Detecting Illicit Transactions in the Bitcoin Blockchain
+# Graph Neural Networks for Anti-Money Laundering on the Elliptic Bitcoin Dataset
 
 **KM6312 Data Mining – Group Project | Nanyang Technological University | Team 3**
 
@@ -10,295 +10,127 @@
 | CHEN SIYING | G2607879H |
 | MA ZIFEI | G2603605G |
 
-🔗 Repository: https://github.com/114niganma514/KM6312-AML-GNN
+Repository: https://github.com/114niganma514/KM6312-AML-GNN
 
-📄 Final report: [`KM6312_Final_Report.docx`](KM6312_Final_Report.docx) · 📝 Proposal (as submitted; the team is listed there under its earlier label "KM6312 GROUP3"): [`KM6312_Group_Project_Proposal.docx`](KM6312_Group_Project_Proposal.docx)
+Final report: [`KM6312_Final_Report.docx`](KM6312_Final_Report.docx) · Proposal (as submitted, team listed as "KM6312 GROUP3"): [`KM6312_Group_Project_Proposal.docx`](KM6312_Group_Project_Proposal.docx)
 
-**Data mining approaches covered:** Exploratory Data Analysis · Classification (supervised ML + GNNs) · Clustering / anomaly detection
+Data mining approaches: exploratory data analysis, classification (classical ML and GNNs), clustering / anomaly detection.
 
-This project applies Graph Neural Networks (GNNs) to detect illicit (money-laundering) transactions in the Bitcoin blockchain, using the Elliptic Bitcoin Transaction Dataset. We compare GNN performance against classical machine learning baselines and unsupervised anomaly detection methods to quantify whether and how graph structure improves illicit transaction detection.
+We compare GCN, GraphSAGE and GAT with Logistic Regression, Random Forest, XGBoost and LightGBM, and with
+Isolation Forest, K-Means and DBSCAN, on the Elliptic Bitcoin transaction graph.
 
-## Project Overview
+## Research questions
 
-### Problem
-Money laundering in cryptocurrencies is a growing problem. Traditional per-transaction feature analysis fails to capture relational patterns such as fund layering through intermediate accounts, clustering around high-degree nodes, and coordinated behavior across connected entities.
+- **RQ1** How do classical, unsupervised and GNN methods compare under severe class imbalance?
+- **RQ2** How much does explicit graph connectivity add beyond local and aggregated features?
+- **RQ3** Do the conclusions hold under a temporal split as well as a random split?
 
-### Approach
-We model Bitcoin transactions as a directed graph (transactions = nodes, payment flows = edges) and apply:
-1. **Exploratory Data Analysis** - feature distributions, temporal patterns, graph topology
-2. **Classical ML Baselines** - Logistic Regression, Random Forest, XGBoost, LightGBM
-3. **Unsupervised Learning** - Isolation Forest, K-Means, DBSCAN
-4. **Graph Neural Networks** - GCN and GraphSAGE as planned in the proposal (GAT and a 3-layer GraphSAGE were added as extra configurations in the ablation study)
-5. **Supplementary experiments promised in the proposal** - validation-set threshold tuning, SMOTE, local-vs-aggregated feature ablation, temporal split for all classical models, prediction on unlabeled nodes with an illicit-subgraph case study, Isolation Forest score distribution (`proposal_experiments.py`)
+## Dataset
 
-### Research Questions (from the proposal)
-- **RQ1.** How do representative classical ML, unsupervised, and GNN methods compare under severe class imbalance?
-- **RQ2.** How much incremental value does explicit graph connectivity provide beyond local and aggregated transaction features?
-- **RQ3.** Are the comparative conclusions consistent between the primary random-split evaluation and a secondary temporal-split evaluation across the 49 time steps?
+Elliptic Bitcoin dataset (Weber et al., 2019): 203,769 transactions, 234,355 directed edges, 49 time steps
+(about two weeks apart). 4,545 illicit, 42,019 licit, 157,205 unknown. Features: 94 local (incl. time step) +
+72 aggregated over one-hop backward/forward neighbours; we drop the time step and use 165.
 
-## Proposal → Implementation Map
+| File | In repo? |
+|---|---|
+| `elliptic_txs_classes.csv` | yes |
+| `elliptic_txs_edgelist.csv` | yes |
+| `elliptic_txs_features.csv` (658 MB) | no, over GitHub's 100 MB limit. Run `python download_data.py` or download from [Kaggle](https://www.kaggle.com/datasets/ellipticco/elliptic-data-set) |
 
-Every analysis planned in the submitted proposal ([`KM6312_Group_Project_Proposal.docx`](KM6312_Group_Project_Proposal.docx)) and where it is implemented:
+## Protocol
 
-| Proposal section | Planned analysis | Code | Output |
-|---|---|---|---|
-| 4.1 EDA | Feature distributions (illicit / licit / unknown) | `eda.py` | `01_class_distribution.png`, `03_feature_distributions.png`, `05_correlation_heatmap.png` |
-| 4.1 EDA | Temporal analysis over 49 time steps | `eda.py` | `02_temporal_patterns.png` |
-| 4.1 EDA | Degree distribution and graph topology | `eda.py` | `04_graph_topology.png` |
-| 4.1 EDA | Visualisation of a labeled illicit subgraph | `proposal_experiments.py` (E5) | `11_case_study_subgraph.png` |
-| 4.2 Preprocessing | Standardisation, 165 features (txId and time step excluded), directed graph | `preprocessing.py` | – |
-| 4.2 Preprocessing | Class-weighted loss | `preprocessing.py`, `baselines.py`, `gnn_model.py` | – |
-| 4.2 Preprocessing | SMOTE as an alternative | `proposal_experiments.py` (E2) | `proposal_experiments_summary.md` |
-| 4.2 Preprocessing | 70 / 15 / 15 stratified random split; temporal split as robustness check | `preprocessing.py` | `train_idx.npy`, `val_idx.npy`, `test_idx.npy` (regenerated) |
-| 4.2 Preprocessing | Edges crossing time-step boundaries (leakage check) | `proposal_experiments.py` (E0) | 0 of 234,355 edges cross time steps |
-| 4.3 Classification | LR, RF, XGBoost, LightGBM | `baselines.py` | `baseline_results.json` |
-| 4.4 Clustering | Isolation Forest, K-Means, DBSCAN | `clustering.py` | `clustering_results.json`, `06_clustering_visualization.png` |
-| 4.4 Clustering | Isolation Forest anomaly-score distribution by class | `proposal_experiments.py` (E6) | `10_isolation_forest_scores.png` |
-| 4.5 GNN | GraphSAGE (2 layers, 64 hidden, mean aggregator), GCN, weighted CE, early stopping | `gnn_model.py` | `gnn_*_results.json`, `*_best.pt` |
-| 4.5 GNN | Transductive prediction on the 77% unlabeled nodes | `gnn_model.py`, `proposal_experiments.py` (E5) | `gnn_*_results.json`, `proposal_experiments_results.json` |
-| 5 Experiments | Nine-model comparison (PR-AUC, ROC-AUC, F1, Recall, Precision) | `evaluation.py` | `model_comparison.csv`, `07_model_comparison.png`, `09_confusion_matrices.png` |
-| 5 Experiments | Decision threshold tuned on the validation set | `proposal_experiments.py` (E1) | `proposal_experiments_summary.md` |
-| 5 Ablation (a) | Feature-only vs feature + graph structure | `baselines.py` vs `gnn_model.py` | `model_comparison.csv` |
-| 5 Ablation (b) | Local (93) vs local + aggregated (165) features | `proposal_experiments.py` (E3) | `12_ablation_results.png` |
-| 5 Ablation (c) | Random vs temporal split | `tune_gnn.py` (GNN), `proposal_experiments.py` (E4, classical) | `tuning_results.json`, `12_ablation_results.png` |
-| 5 Case study | Representative illicit subgraph and its structure | `proposal_experiments.py` (E5) | `11_case_study_subgraph.png` |
-| 6.2 Deliverable | Reproducible pipeline on GitHub | `run_all.py` + `proposal_experiments.py` | this repository |
+- Splits: random stratified 70/15/15 (seed 42); temporal 1-34 / 35-41 / 42-49; Weber split train 1-34, test 35-49.
+- Scaler: all nodes for the random split (transductive, no labels); time steps 1-34 only for temporal splits.
+- Seeds 0-4 for every supervised model (GAT: 0-2). Results are mean ± std.
+- GNN model selection and decision thresholds use the validation set only.
+- PR-AUC is the main metric (illicit class).
 
-### Dataset
-- **Elliptic Bitcoin Transaction Dataset** (Weber et al., 2019)
-- 203,769 transaction nodes, 234,355 directed edges
-- 165 node features
-- Labels: illicit (2.2%), licit (20.6%), unknown (77.2%)
-- 49 time steps (~2 weeks of Bitcoin blockchain activity)
-- Source: [Kaggle - ellipticco/elliptic-data-set](https://www.kaggle.com/datasets/ellipticco/elliptic-data-set)
+## Files
 
-### Data in this repository
-| File | Size | In repo? |
-|---|---|---|
-| `elliptic_txs_classes.csv` (node labels) | 3.2 MB | ✅ included |
-| `elliptic_txs_edgelist.csv` (graph edges) | 4.3 MB | ✅ included |
-| `elliptic_txs_features.csv` (165-dim node features) | 658 MB | ❌ exceeds GitHub's 100 MB file limit — run `python download_data.py` or download from [Kaggle](https://www.kaggle.com/datasets/ellipticco/elliptic-data-set) and place it in the project root |
+| File | What it does |
+|---|---|
+| `data_loader.py` | load the three CSVs |
+| `eda.py` | EDA figures 01-05 |
+| `preprocessing.py` | scaling, splits, edge index, PyG data |
+| `baselines.py` | LR, RF, XGBoost, LightGBM and metrics |
+| `clustering.py` | Isolation Forest, K-Means, DBSCAN |
+| `gnn_model.py` | GCN, GraphSAGE, GAT, training loop |
+| `run_experiments.py` | all supervised runs over seeds + clustering, writes `results/` |
+| `graph_analysis.py` | cross-step edges, homophily, unlabeled predictions, figures 10-11 |
+| `make_figures.py` | `results/summary.md`, figures 07, 09, 12 |
+| `run_all.py` | runs everything in order |
+| `download_data.py` | Kaggle download |
 
-Processed arrays (`*.npy`) are regenerated automatically by `run_all.py`.
+Results: `results/classical_runs.json`, `classical_summary.json`, `gnn_runs.json`, `gnn_summary.json`,
+`clustering_results.json`, `graph_analysis.json`, `summary.md`.
 
-## Project Structure (Flat Layout)
+## How to run
 
-All files are in the project root for easy access:
-
-```
-KM6312-AML-GNN/
-├── data_loader.py              # Dataset loading and statistics
-├── eda.py                      # Exploratory data analysis (5 figures)
-├── preprocessing.py            # Feature scaling, graph construction, splits
-├── baselines.py                # Classical ML classifiers (LR/RF/XGB/LGB)
-├── clustering.py               # Anomaly detection and clustering (IF/KM/DBSCAN)
-├── gnn_model.py                # GCN/GraphSAGE/GAT models + training
-├── evaluation.py               # Model comparison and visualization
-├── run_all.py                  # Main pipeline runner (7 steps)
-├── tune_gnn.py                 # GNN hyperparameter ablation (6 configs)
-├── proposal_experiments.py     # Supplementary experiments planned in the proposal (E0–E6)
-├── run_lrsched.py              # GraphSAGE with learning-rate scheduler (ablation config)
-├── generate_report.py          # ICML-style report generator
-├── download_data.py            # Dataset download script (Kaggle API)
-├── requirements.txt            # Python dependencies
-├── README.md                   # This file
-├── KM6312_Final_Report.docx    # Final project report (ICML style)
-├── KM6312_Group_Project_Proposal.docx # Project proposal
-│
-├── elliptic_txs_features.csv   # Raw data (658 MB, download separately)
-├── elliptic_txs_edgelist.csv   # Raw data (4.3 MB, included)
-├── elliptic_txs_classes.csv    # Raw data (3.2 MB, included)
-│
-├── baseline_results.json       # Baseline model metrics
-├── clustering_results.json     # Clustering metrics
-├── gnn_gcn_results.json        # GCN results
-├── gnn_graphsage_results.json  # GraphSAGE results
-├── gnn_gat_results.json        # GAT results
-├── gnn_graphsage3_results.json # 3-layer GraphSAGE results
-├── tuning_results.json         # GNN ablation study (6 configs)
-├── model_comparison.csv        # All models comparison table
-├── results_summary.md          # Final results summary
-├── proposal_experiments_results.json  # Supplementary experiment metrics
-├── proposal_experiments_summary.md    # Supplementary experiment tables
-│
-├── 01_class_distribution.png   # EDA figure
-├── 02_temporal_patterns.png    # EDA figure
-├── 03_feature_distributions.png # EDA figure
-├── 04_graph_topology.png       # EDA figure
-├── 05_correlation_heatmap.png  # EDA figure
-├── 06_clustering_visualization.png # Clustering figure
-├── 07_model_comparison.png     # Model comparison figure
-├── 09_confusion_matrices.png   # Confusion matrices
-├── 10_isolation_forest_scores.png # Isolation Forest score distribution
-├── 11_case_study_subgraph.png  # Illicit-subgraph case study
-├── 12_ablation_results.png     # Feature / split / imbalance ablations
-│
-├── gcn_best.pt                 # Saved GCN model
-├── graphsage_best.pt           # Saved GraphSAGE model
-├── graphsage3_best.pt          # Saved 3-layer GraphSAGE model
-└── gat_best.pt                 # Saved GAT model
-```
-
-## Installation
-
-### 1. Clone the repository
-```bash
-git clone https://github.com/114niganma514/KM6312-AML-GNN.git
-cd KM6312-AML-GNN
-```
-
-### 2. Install dependencies
 ```bash
 pip install -r requirements.txt
-```
-
-For CPU-only PyTorch (recommended for this project):
-```bash
 pip install torch --index-url https://download.pytorch.org/whl/cpu
 pip install torch-geometric
+python download_data.py      # or put the CSVs in the project root
+python run_all.py            # about 2.5 h on a laptop CPU
+python run_all.py --skip-eda --seeds 1   # quick check
 ```
 
-### 3. Download the dataset
-```bash
-python download_data.py
-```
+On Windows with Anaconda, if PyTorch fails with `OMP: Error #15`, set `KMP_DUPLICATE_LIB_OK=TRUE` first.
 
-This requires Kaggle API credentials. Alternatively, download manually from [Kaggle](https://www.kaggle.com/datasets/ellipticco/elliptic-data-set) and place the three CSV files in the project root.
+## Results
 
-## Usage
+### Classical models (test PR-AUC / F1, mean ± std over 5 seeds)
 
-### Run the full pipeline
-```bash
-python run_all.py
-```
+| Model | PR-AUC (random) | F1 (random) | PR-AUC (temporal, test 42-49) |
+|---|---|---|---|
+| Logistic Regression | 0.7963 ± 0.0000 | 0.6242 ± 0.0000 | 0.1891 ± 0.0000 |
+| Random Forest | 0.9790 ± 0.0003 | 0.9422 ± 0.0015 | 0.5430 ± 0.0024 |
+| XGBoost | 0.9865 ± 0.0000 | 0.9565 ± 0.0000 | 0.5490 ± 0.0000 |
+| LightGBM | 0.9881 ± 0.0000 | 0.9607 ± 0.0000 | 0.5555 ± 0.0000 |
 
-### Run with options
-```bash
-# Skip EDA (faster)
-python run_all.py --skip-eda
+XGBoost, LightGBM and LR have no random subsampling here, so their std is 0.
 
-# Skip GNN training
-python run_all.py --skip-gnn
+### GNNs, random split (selected on validation: **GraphSAGE (2L, h=64)**)
 
-# Run only GNN (requires preprocessed data)
-python run_all.py --gnn-only
+| Model | Val PR-AUC | Test PR-AUC | Test F1 |
+|---|---|---|---|
+| GCN (2L, h=64) | 0.8257 ± 0.0057 | 0.8225 ± 0.0068 | 0.6799 ± 0.0089 |
+| **GraphSAGE (2L, h=64)** | 0.9246 ± 0.0038 | 0.9184 ± 0.0033 | 0.7883 ± 0.0078 |
+| GraphSAGE (2L, h=128) | 0.9207 ± 0.0047 | 0.9166 ± 0.0034 | 0.7819 ± 0.0102 |
+| GraphSAGE (3L, h=128) | 0.9216 ± 0.0067 | 0.9174 ± 0.0041 | 0.7785 ± 0.0135 |
+| GAT (2L, h=64, 4 heads) | 0.8901 ± 0.0010 | 0.8711 ± 0.0022 | 0.5830 ± 0.0112 |
+| GraphSAGE (2L, h=64) + LR sched | 0.9242 ± 0.0034 | 0.9191 ± 0.0042 | 0.7913 ± 0.0099 |
 
-# Use temporal train/val/test split
-python run_all.py --temporal
+### GNNs, temporal split
 
-# Custom GNN training
-python run_all.py --epochs 300 --hidden 128
-```
-
-### Run the supplementary experiments from the proposal
-```bash
-python proposal_experiments.py   # ~4 min on CPU, needs lightgbm, xgboost, imbalanced-learn
-```
-
-### Run GNN ablation study
-```bash
-python tune_gnn.py
-```
-
-### Run individual modules
-```bash
-python eda.py           # EDA only
-python baselines.py     # Baselines only
-python gnn_model.py     # GNN only
-python evaluation.py    # Evaluation only
-```
-
-## Key Results
-
-### Best Model: LightGBM (Classical ML)
-| Metric | Value |
-|--------|-------|
-| PR-AUC | 0.9881 |
-| F1-Score | 0.9607 |
-| Recall | 0.9501 |
-| Precision | 0.9715 |
-
-### Best GNN: 3-Layer GraphSAGE (h=128)
-| Metric | Value |
-|--------|-------|
-| PR-AUC | 0.9272 |
-| F1-Score | 0.7972 |
-| Recall | 0.9135 |
-| Precision | 0.7072 |
-
-### Key Finding
-Classical ML (LightGBM) outperforms GNNs on this dataset because the graph consists of 49 disconnected components (one per time step) with very sparse connectivity (average degree 1.15). However, DBSCAN clustering reveals that graph-structured clusters have 13x higher illicit ratio than noise points, demonstrating the value of graph structure for unsupervised anomaly detection.
-
-### Supplementary Results (`proposal_experiments.py`, report Section 5.5)
-
-| Analysis | Finding |
+| Model | Test PR-AUC |
 |---|---|
-| Threshold tuned on validation (E1) | LightGBM F1 0.9607 → **0.9627** (thr 0.539); Logistic Regression F1 0.6242 → **0.7838** (thr 0.816). Tree models were already near-optimal at 0.5. |
-| SMOTE vs class weights (E2) | SMOTE helps Logistic Regression (PR-AUC 0.7963 → 0.8244) but not the boosted trees (LightGBM 0.9881 → 0.9858). Class weighting is kept as the default. |
-| Local (93) vs local + aggregated (165) features (E3) | Removing the 72 neighbour-aggregated features lowers LightGBM PR-AUC 0.9881 → 0.9804 and F1 0.9607 → 0.9247: the aggregated features already carry much of the relational signal (RQ2). |
-| Random vs temporal split (E4) | All models drop sharply on future time steps 42–49: LightGBM PR-AUC 0.9881 → **0.5530**, GraphSAGE 0.9217 → **0.3361**. The ranking (tree ensembles > GNN > LR) is consistent across splits (RQ3). |
-| Cross-time-step edges (E0) | 0 of 234,355 edges cross time steps, so the temporal split has no edge leakage. |
-| Unlabeled prediction & case study (E5) | LightGBM flags 12,307 of 157,205 unlabeled transactions (7.8%). On average 25.2% of their neighbours are illicit or flagged, vs 5.5% for other unlabeled nodes; the largest connected illicit cluster (time step 29) contains 183 transactions (Figure 11). 37.1% of labeled edges touching an illicit node link two illicit nodes, vs a 9.8% illicit base rate (homophily). |
-| Isolation Forest scores (E6) | Illicit transactions are *less* anomalous than licit ones (ROC-AUC 0.10): illicit activity in Elliptic is repetitive and pattern-like rather than outlying, which explains the weak unsupervised detection. |
+| GCN (2L, h=64) | 0.2221 ± 0.0374 |
+| GraphSAGE (2L, h=64) | 0.2753 ± 0.0161 |
+| GraphSAGE (3L, h=128) | 0.2561 ± 0.0252 |
 
-Minor differences (≤ 0.002) between these reference numbers and `baseline_results.json` come from multi-threaded tree training.
+### Other findings
 
-## Evaluation Metrics
+- Weber split (test 35-49): Random Forest illicit F1 0.8085 ± 0.0009, close to 0.788-0.796 in Weber et al.
+- Local features only (93): LightGBM PR-AUC 0.9804 ± 0.0000 vs 0.9881 ± 0.0000 with all 165.
+- SMOTE: helps LR (PR-AUC 0.8265 ± 0.0024), not LightGBM (0.9848 ± 0.0004).
+- 0 of 234,355 edges cross time steps.
+- Homophily: 37.0% of labelled edges touching an illicit node link two illicit nodes (illicit share of labelled nodes 9.8%).
+- LightGBM flags 12,307 of 157,205 unknown nodes; 4.1% of their neighbours are labelled illicit vs 1.4% for other unknown nodes.
+- Isolation Forest ROC-AUC (illicit vs licit) 0.102: illicit nodes are not outliers in feature space.
+- DBSCAN (feature space, labelled nodes only): 52.2% illicit in clusters vs 3.9% in noise.
 
-Due to severe class imbalance (2.2% illicit), we use:
-- **PR-AUC** (primary metric) - Area Under Precision-Recall Curve
-- **F1-Score** - Harmonic mean of precision and recall
-- **Recall** - Sensitivity to illicit transactions (minimize false negatives)
-- **Precision** - Accuracy of positive predictions
-- **ROC-AUC** - Area Under ROC Curve (secondary)
-
-## Methodology Details
-
-### Graph Construction
-- **Nodes**: Bitcoin transactions (203,769)
-- **Edges**: Directed payment flows (234,355)
-- **Node features**: 165-dimensional vector
-- **Node labels**: 1 = illicit, 0 = licit, -1 = unknown
-
-### GNN Architectures
-- **GCN**: 2-layer Graph Convolutional Network (Kipf & Welling, 2017)
-- **GraphSAGE**: 2/3-layer Graph SAmple and aggreGatE (Hamilton et al., 2017)
-- **GAT**: Graph Attention Network with 4 attention heads (Veličković et al., 2018)
-
-### Training
-- Loss: Weighted cross-entropy (class weights inversely proportional to frequency)
-- Optimizer: Adam (lr=0.01, weight_decay=5e-4)
-- Early stopping: patience=30 epochs on validation loss
-- Train/val/test split: 70%/15%/15% (stratified random, seed 42); temporal split: time steps 1–34 / 35–41 / 42–49
-- Decision threshold: 0.5 by default; validation-tuned thresholds reported in `proposal_experiments_summary.md`
-
-### Classical and Unsupervised Settings
-- Logistic Regression (L2, class weights); Random Forest (200 trees, max depth 15); XGBoost and LightGBM (300 trees, max depth 8, learning rate 0.05, class weighting)
-- Isolation Forest (200 trees, contamination 2%); K-Means (k = 5); DBSCAN (eps 0.5, min_samples 5) on 20 PCA components (64.7% variance)
-- Features are standardised over all 203,769 nodes (no labels used)
+Full tables: [`results/summary.md`](results/summary.md).
 
 ## References
 
-1. Weber, M., Domeniconi, G., Chen, J., Weidele, D. K. I., Bellei, C., Robinson, T., & Leiserson, C. E. (2019). *Anti-Money Laundering in Bitcoin: Experimenting with Graph Convolutional Networks for Financial Forensics.* arXiv:1908.02591.
+1. Weber, M. et al. (2019). Anti-Money Laundering in Bitcoin: Experimenting with Graph Convolutional Networks for Financial Forensics. arXiv:1908.02591.
+2. Kipf, T. N., & Welling, M. (2017). Semi-Supervised Classification with Graph Convolutional Networks. ICLR.
+3. Hamilton, W. L., Ying, R., & Leskovec, J. (2017). Inductive Representation Learning on Large Graphs. NeurIPS.
+4. Veličković, P. et al. (2018). Graph Attention Networks. ICLR.
+5. Chen, T., & Guestrin, C. (2016). XGBoost: A Scalable Tree Boosting System. KDD.
+6. Ke, G. et al. (2017). LightGBM: A Highly Efficient Gradient Boosting Decision Tree. NeurIPS.
+7. Chawla, N. V. et al. (2002). SMOTE: Synthetic Minority Over-sampling Technique. JAIR 16.
+8. Elliptic Data Set. Kaggle. https://www.kaggle.com/datasets/ellipticco/elliptic-data-set
 
-2. Hamilton, W. L., Ying, R., & Leskovec, J. (2017). *Inductive Representation Learning on Large Graphs.* Advances in Neural Information Processing Systems (NeurIPS), 30.
-
-3. Kipf, T. N., & Welling, M. (2017). *Semi-Supervised Classification with Graph Convolutional Networks.* International Conference on Learning Representations (ICLR).
-
-4. Veličković, P., Cucurull, G., Casanova, A., Romero, A., Lio, P., & Bengio, Y. (2018). *Graph Attention Networks.* International Conference on Learning Representations (ICLR).
-
-5. Chen, T., & Guestrin, C. (2016). *XGBoost: A Scalable Tree Boosting System.* Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining, 785–794.
-
-6. Ke, G., Meng, Q., Finley, T., Wang, T., Chen, W., Ma, W., Ye, Q., & Liu, T. Y. (2017). *LightGBM: A Highly Efficient Gradient Boosting Decision Tree.* Advances in Neural Information Processing Systems (NeurIPS), 30, 3146–3154.
-
-7. Chawla, N. V., Bowyer, K. W., Hall, L. O., & Kegelmeyer, W. P. (2002). *SMOTE: Synthetic Minority Over-sampling Technique.* Journal of Artificial Intelligence Research, 16, 321–357.
-
-8. Elliptic Bitcoin Transaction Dataset. Kaggle. https://www.kaggle.com/datasets/ellipticco/elliptic-data-set
-
-## Team
-
-**Team 3** – LIANG JIAYI, FENG YINGNAN, MEI YUHONG, CHEN SIYING, MA ZIFEI
-
-## License
-
-This project is for academic purposes (KM6312 Data Mining course, NTU).
+For academic use (KM6312, NTU).
