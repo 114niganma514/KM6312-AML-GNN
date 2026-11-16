@@ -345,7 +345,7 @@ def run_gnn_pipeline(preprocessed: dict, model_name: str = "GraphSAGE",
         }
         with open(os.path.join(save_dir, f"gnn_{model_name.lower()}_results.json"), "w") as f:
             json.dump(result_summary, f, indent=2)
-        print(f"  Model and results saved to {save_dir}")
+        print("  Model and results saved")
 
     print("\n[GNN] Complete.")
     return {
@@ -360,9 +360,9 @@ if __name__ == "__main__":
     from data_loader import load_all
     from preprocessing import preprocess_pipeline
 
-    BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
     DATA_DIR = BASE_DIR
-    RESULTS_DIR = BASE_DIR
+    RESULTS_DIR = os.path.join(BASE_DIR, "results")
 
     _, edgelist, _, merged = load_all(DATA_DIR)
     preprocessed = preprocess_pipeline(merged, edgelist, temporal=False)

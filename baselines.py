@@ -134,7 +134,7 @@ def train_and_evaluate_models(models: dict, X_train: np.ndarray, y_train: np.nda
             serializable[name] = {k: v for k, v in mets.items()}
         with open(os.path.join(save_dir, "baseline_results.json"), "w") as f:
             json.dump(serializable, f, indent=2)
-        print(f"\n  Results saved to {save_dir}/baseline_results.json")
+        print("\n  Results saved to baseline_results.json")
 
     print("\n[Baselines] Complete.")
     return {"results": results, "models": trained_models}
@@ -169,9 +169,9 @@ if __name__ == "__main__":
     from data_loader import load_all
     from preprocessing import preprocess_pipeline
 
-    BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
     DATA_DIR = BASE_DIR
-    RESULTS_DIR = BASE_DIR
+    RESULTS_DIR = os.path.join(BASE_DIR, "results")
 
     _, edgelist, _, merged = load_all(DATA_DIR)
     preprocessed = preprocess_pipeline(merged, edgelist, temporal=False)

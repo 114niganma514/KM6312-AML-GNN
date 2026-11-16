@@ -209,7 +209,7 @@ def run_eda(data_dir: str, save_dir: str) -> dict:
     graph_stats = plot_graph_topology(edgelist, merged, save_dir)
     plot_correlation_heatmap(merged, save_dir)
 
-    print("\n[EDA] Complete. All figures saved to:", save_dir)
+    print("\n[EDA] Complete. Figures 01-05 saved.")
     return {**stats, **graph_stats}
 
 

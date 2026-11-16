@@ -39,3 +39,9 @@ Thumbs.db
 
 # old single-run scripts and outputs (kept locally, replaced by run_experiments.py)
 _old/
+
+# weights and per-model json from running single modules directly
+results/models/
+*.pt
+results/baseline_results.json
+results/gnn_*_results.json

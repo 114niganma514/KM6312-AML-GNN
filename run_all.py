@@ -12,7 +12,8 @@ DATA = ["elliptic_txs_features.csv", "elliptic_txs_edgelist.csv", "elliptic_txs_
 
 def run(args):
     print("\n>>", " ".join(args))
-    subprocess.run([sys.executable] + args, cwd=BASE_DIR, check=True)
+    env = dict(os.environ, PYTHONIOENCODING="utf-8")  # windows consoles + non-ascii paths
+    subprocess.run([sys.executable] + args, cwd=BASE_DIR, check=True, env=env)
 
 
 def main():

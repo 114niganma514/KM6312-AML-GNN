@@ -186,7 +186,7 @@ def preprocess_pipeline(merged_df: pd.DataFrame, edgelist_df: pd.DataFrame,
         np.save(os.path.join(save_dir, "train_idx.npy"), train_idx)
         np.save(os.path.join(save_dir, "val_idx.npy"), val_idx)
         np.save(os.path.join(save_dir, "test_idx.npy"), test_idx)
-        print(f"  Processed data saved to {save_dir}")
+        print("  Processed data saved (*.npy)")
 
     result = {
         "X": X,
@@ -209,7 +209,7 @@ def preprocess_pipeline(merged_df: pd.DataFrame, edgelist_df: pd.DataFrame,
 if __name__ == "__main__":
     from data_loader import load_all
 
-    BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
     DATA_DIR = BASE_DIR
     PROCESSED_DIR = BASE_DIR
 
