@@ -28,8 +28,22 @@ GNN_CONFIGS = {
     "GraphSAGE (3L, h=128)":     dict(model="GraphSAGE3", hidden=128),
     "GAT (2L, h=64, 4 heads)":   dict(model="GAT", hidden=64),
     "GraphSAGE (2L, h=64) + LR sched": dict(model="GraphSAGE", hidden=64, sched=True, epochs=300),
+    # edges in both directions (a node also hears from the transactions that spend it)
+    "GraphSAGE (2L, h=64), undirected": dict(model="GraphSAGE", hidden=64, edges="undirected"),
+    "GCN (2L, h=64), undirected":       dict(model="GCN", hidden=64, edges="undirected"),
+    # same network with no edges = MLP on the node features
+    "GraphSAGE (2L, h=64), no edges":   dict(model="GraphSAGE", hidden=64, edges="none"),
 }
-TEMPORAL_GNN = ["GCN (2L, h=64)", "GraphSAGE (2L, h=64)", "GraphSAGE (3L, h=128)"]
+TEMPORAL_GNN = ["GCN (2L, h=64)", "GraphSAGE (2L, h=64)", "GraphSAGE (3L, h=128)",
+                "GraphSAGE (2L, h=64), undirected", "GraphSAGE (2L, h=64), no edges"]
+
+
+def edges_for(ei, mode):
+    if mode == "undirected":
+        return np.concatenate([ei, ei[[1, 0]]], axis=1)
+    if mode == "none":
+        return np.zeros((2, 0), dtype=ei.dtype)
+    return ei
 
 
 def f1_threshold(y, p):
@@ -147,20 +161,25 @@ def run_classical(merged, edges, seeds):
     return raw
 
 
-def run_gnn(merged, edges, seeds, gat_seeds):
+def run_gnn(merged, edges, seeds, gat_seeds, only=None):
     import torch
     import torch.nn.functional as F
     from gnn_model import get_model, train_gnn, evaluate_gnn, set_seed
 
-    raw = {"random": {}, "temporal": {}}
+    # --gnn-only: rerun some configs and keep the others from gnn_runs.json
+    path = os.path.join(OUT_DIR, "gnn_runs.json")
+    raw = json.load(open(path)) if only and os.path.exists(path) else {"random": {}, "temporal": {}}
     for setting in ["random", "temporal"]:
         pre = preprocess_pipeline(merged, edges, temporal=(setting == "temporal"))
         y = pre["labels"]
-        data = build_pyg_data(pre["X"], pre["edge_index"], y,
-                              pre["train_idx"], pre["val_idx"], pre["test_idx"])
         names = list(GNN_CONFIGS) if setting == "random" else TEMPORAL_GNN
+        if only:
+            names = [n for n in names if n in only]
         for name in names:
             cfg = GNN_CONFIGS[name]
+            raw[setting][name] = []
+            data = build_pyg_data(pre["X"], edges_for(pre["edge_index"], cfg.get("edges")), y,
+                                  pre["train_idx"], pre["val_idx"], pre["test_idx"])
             use_seeds = gat_seeds if cfg["model"] == "GAT" else seeds
             for s in use_seeds:
                 print(f"[gnn] {setting} {name} seed={s}")
@@ -214,8 +233,11 @@ def main():
     ap.add_argument("--gnn", action="store_true")
     ap.add_argument("--clustering", action="store_true")
     ap.add_argument("--seeds", type=int, default=5)
-    ap.add_argument("--gat-seeds", type=int, default=3)  # GAT is ~10x slower on CPU
+    ap.add_argument("--gat-seeds", type=int, default=3)  # GAT is ~8x slower on CPU
+    ap.add_argument("--gnn-only", default="", help="config names separated by ;")
     a = ap.parse_args()
+    if a.gnn_only:
+        a.gnn = True
     if not (a.classical or a.gnn or a.clustering):
         a.classical = a.gnn = a.clustering = True
     seeds = list(range(a.seeds))
@@ -227,7 +249,8 @@ def main():
         save_json(raw, "classical_runs.json")
         save_json(summarise(raw), "classical_summary.json")
     if a.gnn:
-        raw = run_gnn(merged, edges, seeds, list(range(a.gat_seeds)))
+        only = [x.strip() for x in a.gnn_only.split(";") if x.strip()] if a.gnn_only else None
+        raw = run_gnn(merged, edges, seeds, list(range(a.gat_seeds)), only)
         summ = summarise(raw)
         # model selection on validation PR-AUC only
         best = max(summ["random"], key=lambda k: summ["random"][k]["val"]["pr_auc"]["mean"])

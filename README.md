@@ -58,11 +58,12 @@ Elliptic Bitcoin dataset (Weber et al., 2019): 203,769 transactions, 234,355 dir
 | `run_experiments.py` | all supervised runs over seeds + clustering, writes `results/` |
 | `graph_analysis.py` | cross-step edges, homophily, unlabeled predictions, figures 10-11 |
 | `make_figures.py` | `results/summary.md`, figures 07, 09, 12 |
+| `verify_gnn.py` | checks on the GNN part (splits, test labels unused, reruns, PR-AUC) |
 | `run_all.py` | runs everything in order |
 | `download_data.py` | Kaggle download |
 
 Results: `results/classical_runs.json`, `classical_summary.json`, `gnn_runs.json`, `gnn_summary.json`,
-`clustering_results.json`, `graph_analysis.json`, `summary.md`.
+`clustering_results.json`, `graph_analysis.json`, `gnn_verification.json`, `summary.md`.
 
 ## How to run
 
@@ -71,7 +72,7 @@ pip install -r requirements.txt
 pip install torch --index-url https://download.pytorch.org/whl/cpu
 pip install torch-geometric
 python download_data.py      # or put the CSVs in the project root
-python run_all.py            # about 2.5 h on a laptop CPU
+python run_all.py            # about 3 h on a laptop CPU
 python run_all.py --skip-eda --seeds 1   # quick check
 ```
 
@@ -90,16 +91,23 @@ On Windows with Anaconda, if PyTorch fails with `OMP: Error #15`, set `KMP_DUPLI
 
 XGBoost, LightGBM and LR have no random subsampling here, so their std is 0.
 
-### GNNs, random split (selected on validation: **GraphSAGE (2L, h=64)**)
+### GNNs, random split (selected on validation: **GraphSAGE (2L, h=64), undirected**)
 
 | Model | Val PR-AUC | Test PR-AUC | Test F1 |
 |---|---|---|---|
 | GCN (2L, h=64) | 0.8257 ± 0.0057 | 0.8225 ± 0.0068 | 0.6799 ± 0.0089 |
-| **GraphSAGE (2L, h=64)** | 0.9246 ± 0.0038 | 0.9184 ± 0.0033 | 0.7883 ± 0.0078 |
+| GraphSAGE (2L, h=64) | 0.9246 ± 0.0038 | 0.9184 ± 0.0033 | 0.7883 ± 0.0078 |
 | GraphSAGE (2L, h=128) | 0.9207 ± 0.0047 | 0.9166 ± 0.0034 | 0.7819 ± 0.0102 |
 | GraphSAGE (3L, h=128) | 0.9216 ± 0.0067 | 0.9174 ± 0.0041 | 0.7785 ± 0.0135 |
 | GAT (2L, h=64, 4 heads) | 0.8901 ± 0.0010 | 0.8711 ± 0.0022 | 0.5830 ± 0.0112 |
 | GraphSAGE (2L, h=64) + LR sched | 0.9242 ± 0.0034 | 0.9191 ± 0.0042 | 0.7913 ± 0.0099 |
+| **GraphSAGE (2L, h=64), undirected** | 0.9478 ± 0.0018 | 0.9363 ± 0.0037 | 0.8278 ± 0.0093 |
+| GCN (2L, h=64), undirected | 0.9074 ± 0.0032 | 0.8986 ± 0.0041 | 0.7821 ± 0.0044 |
+| GraphSAGE (2L, h=64), no edges | 0.9221 ± 0.0047 | 0.9160 ± 0.0073 | 0.7815 ± 0.0176 |
+
+Edge direction matters: with the edges as released (a node only hears from the transactions it spends)
+GraphSAGE is no better than the same network without edges; with undirected edges it improves clearly.
+To rerun only some GNN configs: `python run_experiments.py --gnn-only "GraphSAGE (2L, h=64), undirected"`.
 
 ### GNNs, temporal split
 
@@ -108,6 +116,8 @@ XGBoost, LightGBM and LR have no random subsampling here, so their std is 0.
 | GCN (2L, h=64) | 0.2221 ± 0.0374 |
 | GraphSAGE (2L, h=64) | 0.2753 ± 0.0161 |
 | GraphSAGE (3L, h=128) | 0.2561 ± 0.0252 |
+| GraphSAGE (2L, h=64), undirected | 0.3422 ± 0.0211 |
+| GraphSAGE (2L, h=64), no edges | 0.2201 ± 0.0599 |
 
 ### Other findings
 

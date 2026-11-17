@@ -449,6 +449,231 @@
         "at_val_threshold": 12891,
         "val_threshold": 0.8659
       }
+    },
+    "GraphSAGE (2L, h=64), undirected": {
+      "n_seeds": 5,
+      "val": {
+        "pr_auc": {
+          "mean": 0.9478,
+          "std": 0.0018
+        },
+        "roc_auc": {
+          "mean": 0.9868,
+          "std": 0.0007
+        },
+        "f1_score": {
+          "mean": 0.8402,
+          "std": 0.0076
+        },
+        "recall": {
+          "mean": 0.9235,
+          "std": 0.0073
+        },
+        "precision": {
+          "mean": 0.771,
+          "std": 0.0147
+        }
+      },
+      "test": {
+        "pr_auc": {
+          "mean": 0.9363,
+          "std": 0.0037
+        },
+        "roc_auc": {
+          "mean": 0.9861,
+          "std": 0.0007
+        },
+        "f1_score": {
+          "mean": 0.8278,
+          "std": 0.0093
+        },
+        "recall": {
+          "mean": 0.9223,
+          "std": 0.0021
+        },
+        "precision": {
+          "mean": 0.7511,
+          "std": 0.0153
+        }
+      },
+      "test_tuned": {
+        "pr_auc": {
+          "mean": 0.9363,
+          "std": 0.0037
+        },
+        "roc_auc": {
+          "mean": 0.9861,
+          "std": 0.0007
+        },
+        "f1_score": {
+          "mean": 0.8772,
+          "std": 0.0054
+        },
+        "recall": {
+          "mean": 0.8448,
+          "std": 0.0152
+        },
+        "precision": {
+          "mean": 0.913,
+          "std": 0.0228
+        }
+      },
+      "unlabeled_pred_illicit": {
+        "n_unlabeled": 157205,
+        "at_0.5": 26088,
+        "at_val_threshold": 11552,
+        "val_threshold": 0.8608
+      }
+    },
+    "GCN (2L, h=64), undirected": {
+      "n_seeds": 5,
+      "val": {
+        "pr_auc": {
+          "mean": 0.9074,
+          "std": 0.0032
+        },
+        "roc_auc": {
+          "mean": 0.9834,
+          "std": 0.0006
+        },
+        "f1_score": {
+          "mean": 0.7915,
+          "std": 0.0029
+        },
+        "recall": {
+          "mean": 0.9279,
+          "std": 0.0031
+        },
+        "precision": {
+          "mean": 0.6901,
+          "std": 0.0038
+        }
+      },
+      "test": {
+        "pr_auc": {
+          "mean": 0.8986,
+          "std": 0.0041
+        },
+        "roc_auc": {
+          "mean": 0.9828,
+          "std": 0.0003
+        },
+        "f1_score": {
+          "mean": 0.7821,
+          "std": 0.0044
+        },
+        "recall": {
+          "mean": 0.9199,
+          "std": 0.0038
+        },
+        "precision": {
+          "mean": 0.6802,
+          "std": 0.0053
+        }
+      },
+      "test_tuned": {
+        "pr_auc": {
+          "mean": 0.8986,
+          "std": 0.0041
+        },
+        "roc_auc": {
+          "mean": 0.9828,
+          "std": 0.0003
+        },
+        "f1_score": {
+          "mean": 0.8413,
+          "std": 0.0029
+        },
+        "recall": {
+          "mean": 0.8387,
+          "std": 0.01
+        },
+        "precision": {
+          "mean": 0.8442,
+          "std": 0.0122
+        }
+      },
+      "unlabeled_pred_illicit": {
+        "n_unlabeled": 157205,
+        "at_0.5": 28464,
+        "at_val_threshold": 12475,
+        "val_threshold": 0.8335
+      }
+    },
+    "GraphSAGE (2L, h=64), no edges": {
+      "n_seeds": 5,
+      "val": {
+        "pr_auc": {
+          "mean": 0.9221,
+          "std": 0.0047
+        },
+        "roc_auc": {
+          "mean": 0.9822,
+          "std": 0.0011
+        },
+        "f1_score": {
+          "mean": 0.7853,
+          "std": 0.0135
+        },
+        "recall": {
+          "mean": 0.9135,
+          "std": 0.0052
+        },
+        "precision": {
+          "mean": 0.689,
+          "std": 0.0204
+        }
+      },
+      "test": {
+        "pr_auc": {
+          "mean": 0.916,
+          "std": 0.0073
+        },
+        "roc_auc": {
+          "mean": 0.9817,
+          "std": 0.0013
+        },
+        "f1_score": {
+          "mean": 0.7815,
+          "std": 0.0176
+        },
+        "recall": {
+          "mean": 0.9085,
+          "std": 0.0042
+        },
+        "precision": {
+          "mean": 0.686,
+          "std": 0.0256
+        }
+      },
+      "test_tuned": {
+        "pr_auc": {
+          "mean": 0.916,
+          "std": 0.0073
+        },
+        "roc_auc": {
+          "mean": 0.9817,
+          "std": 0.0013
+        },
+        "f1_score": {
+          "mean": 0.8687,
+          "std": 0.004
+        },
+        "recall": {
+          "mean": 0.8226,
+          "std": 0.0126
+        },
+        "precision": {
+          "mean": 0.9206,
+          "std": 0.0131
+        }
+      },
+      "unlabeled_pred_illicit": {
+        "n_unlabeled": 157205,
+        "at_0.5": 38244,
+        "at_val_threshold": 13511,
+        "val_threshold": 0.8729
+      }
     }
   },
   "temporal": {
@@ -676,7 +901,157 @@
         "at_val_threshold": 20323,
         "val_threshold": 0.7587
       }
+    },
+    "GraphSAGE (2L, h=64), undirected": {
+      "n_seeds": 5,
+      "val": {
+        "pr_auc": {
+          "mean": 0.4821,
+          "std": 0.0408
+        },
+        "roc_auc": {
+          "mean": 0.8991,
+          "std": 0.0253
+        },
+        "f1_score": {
+          "mean": 0.4779,
+          "std": 0.0869
+        },
+        "recall": {
+          "mean": 0.821,
+          "std": 0.0313
+        },
+        "precision": {
+          "mean": 0.3448,
+          "std": 0.0806
+        }
+      },
+      "test": {
+        "pr_auc": {
+          "mean": 0.3422,
+          "std": 0.0211
+        },
+        "roc_auc": {
+          "mean": 0.8118,
+          "std": 0.0036
+        },
+        "f1_score": {
+          "mean": 0.302,
+          "std": 0.074
+        },
+        "recall": {
+          "mean": 0.5809,
+          "std": 0.1329
+        },
+        "precision": {
+          "mean": 0.2198,
+          "std": 0.0708
+        }
+      },
+      "test_tuned": {
+        "pr_auc": {
+          "mean": 0.3422,
+          "std": 0.0211
+        },
+        "roc_auc": {
+          "mean": 0.8118,
+          "std": 0.0036
+        },
+        "f1_score": {
+          "mean": 0.3686,
+          "std": 0.0582
+        },
+        "recall": {
+          "mean": 0.4294,
+          "std": 0.0385
+        },
+        "precision": {
+          "mean": 0.343,
+          "std": 0.0901
+        }
+      },
+      "unlabeled_pred_illicit": {
+        "n_unlabeled": 157205,
+        "at_0.5": 37473,
+        "at_val_threshold": 16070,
+        "val_threshold": 0.838
+      }
+    },
+    "GraphSAGE (2L, h=64), no edges": {
+      "n_seeds": 5,
+      "val": {
+        "pr_auc": {
+          "mean": 0.5497,
+          "std": 0.0947
+        },
+        "roc_auc": {
+          "mean": 0.9118,
+          "std": 0.0102
+        },
+        "f1_score": {
+          "mean": 0.3372,
+          "std": 0.0141
+        },
+        "recall": {
+          "mean": 0.9268,
+          "std": 0.0073
+        },
+        "precision": {
+          "mean": 0.2062,
+          "std": 0.0107
+        }
+      },
+      "test": {
+        "pr_auc": {
+          "mean": 0.2201,
+          "std": 0.0599
+        },
+        "roc_auc": {
+          "mean": 0.8116,
+          "std": 0.0137
+        },
+        "f1_score": {
+          "mean": 0.1585,
+          "std": 0.0074
+        },
+        "recall": {
+          "mean": 0.8682,
+          "std": 0.0168
+        },
+        "precision": {
+          "mean": 0.0873,
+          "std": 0.0046
+        }
+      },
+      "test_tuned": {
+        "pr_auc": {
+          "mean": 0.2201,
+          "std": 0.0599
+        },
+        "roc_auc": {
+          "mean": 0.8116,
+          "std": 0.0137
+        },
+        "f1_score": {
+          "mean": 0.2592,
+          "std": 0.02
+        },
+        "recall": {
+          "mean": 0.5338,
+          "std": 0.0305
+        },
+        "precision": {
+          "mean": 0.1722,
+          "std": 0.019
+        }
+      },
+      "unlabeled_pred_illicit": {
+        "n_unlabeled": 157205,
+        "at_0.5": 107782,
+        "at_val_threshold": 39271,
+        "val_threshold": 0.701
+      }
     }
   },
-  "selected_by_validation": "GraphSAGE (2L, h=64)"
+  "selected_by_validation": "GraphSAGE (2L, h=64), undirected"
 }

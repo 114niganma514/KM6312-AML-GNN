@@ -1,0 +1,144 @@
+{
+  "checks": {
+    "random: splits disjoint and labelled": {
+      "pass": true,
+      "info": "32594/6985/6985"
+    },
+    "temporal: splits disjoint and labelled": {
+      "pass": true,
+      "info": "29894/7829/8841"
+    },
+    "temporal: time steps 1-34 / 35-41 / 42-49": {
+      "pass": true,
+      "info": ""
+    },
+    "temporal: scaler fitted on steps 1-34 only": {
+      "pass": true,
+      "info": "max |mean| past 1.2e-12"
+    },
+    "test labels never used (hide them, retrain)": {
+      "pass": true,
+      "info": "max prob diff 0.0e+00"
+    },
+    "rerun random GraphSAGE (2L, h=64) seed 0": {
+      "pass": true,
+      "info": "now 0.9220, saved 0.9220"
+    },
+    "rerun random GCN (2L, h=64) seed 0": {
+      "pass": true,
+      "info": "now 0.8209, saved 0.8209"
+    },
+    "rerun temporal GraphSAGE (2L, h=64) seed 0": {
+      "pass": true,
+      "info": "now 0.2905, saved 0.2905"
+    },
+    "PR-AUC close to average precision": {
+      "pass": true,
+      "info": "trapezoid 0.9220, AP 0.9221"
+    }
+  },
+  "graphsage_edge_ablation": {
+    "directed (main)": {
+      "val_pr_auc": {
+        "mean": 0.9231,
+        "std": 0.004
+      },
+      "test_pr_auc": {
+        "mean": 0.9174,
+        "std": 0.0039
+      },
+      "test_f1_val_thr": {
+        "mean": 0.8585,
+        "std": 0.0083
+      },
+      "runs": [
+        {
+          "val_pr_auc": 0.9283,
+          "test_pr_auc": 0.922,
+          "test_f1_val_thr": 0.8701,
+          "best_epoch": 90
+        },
+        {
+          "val_pr_auc": 0.9185,
+          "test_pr_auc": 0.9124,
+          "test_f1_val_thr": 0.8513,
+          "best_epoch": 69
+        },
+        {
+          "val_pr_auc": 0.9225,
+          "test_pr_auc": 0.9178,
+          "test_f1_val_thr": 0.8542,
+          "best_epoch": 60
+        }
+      ]
+    },
+    "no edges (MLP)": {
+      "val_pr_auc": {
+        "mean": 0.9195,
+        "std": 0.0043
+      },
+      "test_pr_auc": {
+        "mean": 0.9132,
+        "std": 0.0081
+      },
+      "test_f1_val_thr": {
+        "mean": 0.8664,
+        "std": 0.0035
+      },
+      "runs": [
+        {
+          "val_pr_auc": 0.9164,
+          "test_pr_auc": 0.9043,
+          "test_f1_val_thr": 0.862,
+          "best_epoch": 62
+        },
+        {
+          "val_pr_auc": 0.9256,
+          "test_pr_auc": 0.9239,
+          "test_f1_val_thr": 0.8706,
+          "best_epoch": 88
+        },
+        {
+          "val_pr_auc": 0.9165,
+          "test_pr_auc": 0.9113,
+          "test_f1_val_thr": 0.8666,
+          "best_epoch": 65
+        }
+      ]
+    },
+    "undirected": {
+      "val_pr_auc": {
+        "mean": 0.948,
+        "std": 0.0019
+      },
+      "test_pr_auc": {
+        "mean": 0.9357,
+        "std": 0.0047
+      },
+      "test_f1_val_thr": {
+        "mean": 0.8771,
+        "std": 0.0064
+      },
+      "runs": [
+        {
+          "val_pr_auc": 0.9502,
+          "test_pr_auc": 0.9422,
+          "test_f1_val_thr": 0.8836,
+          "best_epoch": 101
+        },
+        {
+          "val_pr_auc": 0.9455,
+          "test_pr_auc": 0.9332,
+          "test_f1_val_thr": 0.8793,
+          "best_epoch": 82
+        },
+        {
+          "val_pr_auc": 0.9482,
+          "test_pr_auc": 0.9316,
+          "test_f1_val_thr": 0.8685,
+          "best_epoch": 70
+        }
+      ]
+    }
+  }
+}
